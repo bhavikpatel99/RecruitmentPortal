@@ -107,3 +107,13 @@ You are free to use, copy, modify, merge, publish, distribute, sublicense, and s
 
 The software is provided "as is", without warranty of any kind. See the [LICENSE](LICENSE) file for the complete license terms.
 
+## Attribution
+
+This project is released under the MIT License.
+
+If you use this project in your own application, product, website, or other project, **credit to Bhavik Patel is greatly appreciated**.
+
+Where practical, please retain the original copyright notice and provide a reference to the original GitHub repository.
+
+Copyright © 2026 Bhavik Patel.
+
