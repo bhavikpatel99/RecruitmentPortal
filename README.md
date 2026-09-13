@@ -98,3 +98,7 @@ Run the backend (`dotnet run` from `backend/RecruitmentPortal.API`) and the fron
 ## Documentation
 
 Additional project documentation (user guide, handbook) is available in the [docs/](docs/) folder.
+
+## License
+
+This project is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE) — free to use, modify, and share for any **noncommercial purpose** (personal, educational, research, hobby). Commercial or professional use is **not permitted** under this license.
