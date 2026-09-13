@@ -9,8 +9,16 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+
+2. If the Software, or a substantial portion of the Software, is used,
+   modified, incorporated, or distributed in another project, product,
+   application, or service, reasonable credit must be given to the original
+   author, **Bhavik Patel**.
+
+3. The attribution should, where reasonably practical, include the name
+   **"Bhavik Patel"** and a reference to the original GitHub repository.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
