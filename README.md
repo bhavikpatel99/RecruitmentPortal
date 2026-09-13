@@ -101,4 +101,9 @@ Additional project documentation (user guide, handbook) is available in the [doc
 
 ## License
 
-This project is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE) — free to use, modify, and share for any **noncommercial purpose** (personal, educational, research, hobby). Commercial or professional use is **not permitted** under this license.
+This project is licensed under the [MIT License](LICENSE).
+
+You are free to use, copy, modify, merge, publish, distribute, sublicense, and sell copies of this software, subject to the terms and conditions of the MIT License.
+
+The software is provided "as is", without warranty of any kind. See the [LICENSE](LICENSE) file for the complete license terms.
+
