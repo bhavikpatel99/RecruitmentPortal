@@ -1,0 +1,806 @@
+<title>The Recruitment Portal Handbook</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg:#F3F6F8;
+    --surface:#FFFFFF;
+    --surface-2:#EBF0F3;
+    --ink:#16212C;
+    --muted:#59707F;
+    --border:#DAE3E9;
+    --accent:#1F5673;
+    --accent-ink:#EAF2F5;
+    --accent-strong:#153E52;
+    --gold:#A8791E;
+    --gold-ink:#FBF1DF;
+    --danger:#AD4530;
+    --danger-ink:#FBECE7;
+    --shadow: 0 1px 2px rgba(22,33,44,.05), 0 8px 24px rgba(22,33,44,.06);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#101820;
+      --surface:#172029;
+      --surface-2:#1D2731;
+      --ink:#E7EEF2;
+      --muted:#93A7B4;
+      --border:#28333D;
+      --accent:#74B7D1;
+      --accent-ink:#182A32;
+      --accent-strong:#9ED0E5;
+      --gold:#D9AD5C;
+      --gold-ink:#2A2211;
+      --danger:#E4917C;
+      --danger-ink:#2C1815;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#101820;
+    --surface:#172029;
+    --surface-2:#1D2731;
+    --ink:#E7EEF2;
+    --muted:#93A7B4;
+    --border:#28333D;
+    --accent:#74B7D1;
+    --accent-ink:#182A32;
+    --accent-strong:#9ED0E5;
+    --gold:#D9AD5C;
+    --gold-ink:#2A2211;
+    --danger:#E4917C;
+    --danger-ink:#2C1815;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Public Sans", system-ui, -apple-system, sans-serif;
+    font-size:16px;
+    line-height:1.6;
+  }
+  h1,h2,h3{
+    font-family:"Fraunces", Georgia, "Times New Roman", serif;
+    font-weight:600;
+    text-wrap:balance;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  code, .kbd{
+    font-family:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    font-size:.86em;
+  }
+  code{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:5px;
+    padding:.1em .4em;
+    color:var(--accent-strong);
+  }
+  a{ color:var(--accent-strong); }
+
+  .shell{
+    display:grid;
+    grid-template-columns: 272px minmax(0,1fr);
+    max-width:1280px;
+    margin:0 auto;
+  }
+
+  /* ---- Sidebar ---- */
+  .sidebar{
+    position:sticky;
+    top:0;
+    align-self:start;
+    height:100vh;
+    overflow-y:auto;
+    padding:28px 18px 40px 24px;
+    border-right:1px solid var(--border);
+    scrollbar-width:thin;
+  }
+  .brand{
+    font-family:"Fraunces", serif;
+    font-weight:600;
+    font-size:1.15rem;
+    line-height:1.25;
+    margin:0 0 2px;
+  }
+  .brand-sub{
+    font-size:.78rem;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    margin:0 0 26px;
+  }
+  .nav-group{ margin-bottom:22px; }
+  .nav-group-label{
+    font-size:.72rem;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    color:var(--muted);
+    margin:0 0 8px;
+    padding-left:10px;
+  }
+  .nav-group a{
+    display:block;
+    padding:6px 10px;
+    border-radius:7px;
+    color:var(--muted);
+    text-decoration:none;
+    font-size:.92rem;
+    font-weight:500;
+    border-left:2px solid transparent;
+  }
+  .nav-group a:hover{ color:var(--ink); background:var(--surface-2); }
+  .nav-group a.active{
+    color:var(--accent-strong);
+    background:var(--accent-ink);
+    border-left-color:var(--accent);
+    font-weight:600;
+  }
+
+  /* ---- Content ---- */
+  .content{ padding:44px 48px 100px; min-width:0; }
+  .content > .lede{ max-width:62ch; }
+  header.hero{ margin-bottom:44px; max-width:64ch; }
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:.78rem;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    color:var(--accent-strong);
+    background:var(--accent-ink);
+    padding:4px 11px;
+    border-radius:999px;
+    margin-bottom:16px;
+  }
+  h1.title{ font-size:2.35rem; margin:0 0 12px; }
+  .dek{ font-size:1.08rem; color:var(--muted); margin:0; max-width:58ch;}
+
+  section.module{
+    max-width:68ch;
+    margin: 56px 0;
+    scroll-margin-top: 24px;
+  }
+  section.module:first-of-type{ margin-top:0; }
+  .module-head{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:6px;}
+  .module-head h2{ font-size:1.5rem; margin:0; }
+  .role-pills{ display:flex; gap:6px; flex-wrap:wrap; }
+  .pill{
+    font-family:"Public Sans",sans-serif;
+    font-size:.7rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    padding:3px 9px;
+    border-radius:999px;
+    border:1px solid var(--border);
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .pill.admin{ color:var(--danger); border-color:color-mix(in srgb, var(--danger) 40%, var(--border)); }
+  .pill.staff{ color:var(--accent-strong); border-color:color-mix(in srgb, var(--accent) 40%, var(--border)); }
+  .pill.candidate{ color:var(--gold); border-color:color-mix(in srgb, var(--gold) 45%, var(--border)); }
+  .pill.agency{ color:var(--muted); }
+
+  .route{
+    display:inline-block;
+    margin: 2px 0 18px;
+    color:var(--muted);
+    font-size:.86rem;
+  }
+
+  .module p{ margin: 0 0 14px; color: var(--ink); }
+  .module ul, .module ol{ margin:0 0 14px; padding-left:1.3em; }
+  .module li{ margin-bottom:7px; }
+  .module li::marker{ color: var(--muted); }
+
+  .callout{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-left:3px solid var(--accent);
+    border-radius:10px;
+    padding:14px 18px;
+    margin:18px 0;
+    box-shadow:var(--shadow);
+    font-size:.94rem;
+  }
+  .callout.warn{ border-left-color: var(--gold); }
+  .callout strong{ display:block; margin-bottom:3px; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+
+  table.ref{
+    width:100%;
+    border-collapse:collapse;
+    margin: 10px 0 20px;
+    font-size:.92rem;
+  }
+  table.ref th, table.ref td{
+    text-align:left;
+    padding:9px 12px;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  table.ref th{
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--muted);
+    font-weight:600;
+  }
+  .table-wrap{ overflow-x:auto; }
+
+  /* Pipeline stage tracker */
+  .stage-track{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin: 16px 0 8px;
+  }
+  .stage-chip{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:.74rem;
+    font-weight:600;
+    padding:6px 10px;
+    border-radius:7px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--ink);
+    white-space:nowrap;
+  }
+  .stage-chip.gold{ background:var(--gold-ink); color:var(--gold); border-color: color-mix(in srgb, var(--gold) 35%, var(--border)); }
+  .stage-arrow{ color:var(--muted); align-self:center; font-size:.8rem; }
+  .stage-track.terminal .stage-chip{ background:var(--danger-ink); color:var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); }
+
+  hr.div{ border:none; border-top:1px solid var(--border); margin:44px 0; }
+
+  .foot{
+    max-width:68ch;
+    color:var(--muted);
+    font-size:.86rem;
+    margin-top:60px;
+    padding-top:20px;
+    border-top:1px solid var(--border);
+  }
+
+  @media (max-width: 900px){
+    .shell{ grid-template-columns: 1fr; }
+    .sidebar{ position:relative; height:auto; border-right:none; border-bottom:1px solid var(--border); padding:20px 20px 8px; }
+    .content{ padding:32px 20px 80px; }
+    h1.title{ font-size:1.85rem; }
+  }
+</style>
+
+<div class="shell">
+  <nav class="sidebar" aria-label="Guide sections">
+    <p class="brand">Recruitment&nbsp;Portal</p>
+    <p class="brand-sub">Handbook</p>
+
+    <div class="nav-group">
+      <p class="nav-group-label">Start here</p>
+      <a href="#welcome">Welcome</a>
+      <a href="#getting-started">Getting started</a>
+      <a href="#roles">Roles at a glance</a>
+    </div>
+
+    <div class="nav-group">
+      <p class="nav-group-label">For candidates</p>
+      <a href="#candidates">Finding &amp; applying to jobs</a>
+    </div>
+
+    <div class="nav-group">
+      <p class="nav-group-label">Recruiting workspace</p>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#requisitions">Requisitions</a>
+      <a href="#job-postings">Job Postings</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#candidate-detail">Candidates &amp; Talent Search</a>
+      <a href="#screening">Screening &amp; Shortlisting</a>
+      <a href="#interviews">Interviews</a>
+      <a href="#assessments">Assessments</a>
+      <a href="#offers">Offers</a>
+      <a href="#onboarding">Onboarding</a>
+      <a href="#communication">Communication Center</a>
+      <a href="#agencies-staff">Agencies</a>
+      <a href="#referrals">Referrals</a>
+      <a href="#analytics">Analytics</a>
+    </div>
+
+    <div class="nav-group">
+      <p class="nav-group-label">Administration</p>
+      <a href="#org-setup">Org &amp; Hiring Setup</a>
+      <a href="#smtp">Email &amp; SMTP</a>
+      <a href="#demo-setup">Local &amp; demo setup</a>
+    </div>
+
+    <div class="nav-group">
+      <p class="nav-group-label">For agency partners</p>
+      <a href="#agency-portal">Agency Portal</a>
+    </div>
+
+    <div class="nav-group">
+      <p class="nav-group-label">What's next</p>
+      <a href="#roadmap">Future enhancements</a>
+    </div>
+
+    <div class="nav-group">
+      <p class="nav-group-label">Reference</p>
+      <a href="#stages">Pipeline stages</a>
+      <a href="#faq">Tips &amp; troubleshooting</a>
+    </div>
+  </nav>
+
+  <main class="content">
+
+    <header class="hero" id="welcome">
+      <span class="eyebrow">Handbook · v2</span>
+      <h1 class="title">Running hire-to-close on the Recruitment Portal</h1>
+      <p class="dek">One system covers the whole recruit-to-hire lifecycle — from a hiring manager's manpower request through screening, interviews, offers, and the handoff to onboarding. This guide walks through it by role: what you'll see when you log in, and what each screen is for.</p>
+    </header>
+
+    <section class="module" id="getting-started">
+      <div class="module-head"><h2>Getting started</h2></div>
+      <p>Open the portal's URL in a browser — you'll land on <strong>Sign In</strong>. From there:</p>
+      <ul>
+        <li><strong>Candidates create their own account.</strong> Click <strong>Register</strong> on the sign-in page and fill in your full name, email, and a password.</li>
+        <li><strong>Staff and agency accounts are issued by an Admin</strong> — there's no self-service sign-up for Recruiter, Hiring Manager, or Agency accounts. If you need one, ask your Admin.</li>
+        <li>After signing in, you land on the page for your role automatically — see <a href="#roles">Roles at a glance</a> below.</li>
+        <li>There's no self-service "forgot password" flow yet — if you're locked out, an Admin needs to help.</li>
+      </ul>
+      <div class="callout">
+        <strong>Password requirements</strong>
+        At least 8 characters, including an uppercase letter, a lowercase letter, and a digit. This applies whether you're registering yourself or an Admin is creating your account.
+      </div>
+      <div class="callout warn">
+        <strong>If you get signed out unexpectedly</strong>
+        Sessions last a couple of hours. If yours expires while you're working, you'll see a clear "Your session has expired — please log in again" notice and be returned to Sign In — nothing is lost except needing to log back in.
+      </div>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="roles">
+      <div class="module-head"><h2>Roles at a glance</h2></div>
+      <p>What you can do — and where you land after logging in — depends on your role. An administrator sets this when your account is created.</p>
+      <div class="table-wrap">
+        <table class="ref">
+          <thead><tr><th>Role</th><th>Lands on</th><th>Can do</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Admin</strong></td><td><code>/workspace/dashboard</code></td><td>Everything a Recruiter can, plus Org Setup, SMTP configuration, agency accounts, and every approval.</td></tr>
+            <tr><td><strong>Recruiter</strong></td><td><code>/workspace/dashboard</code></td><td>Runs day-to-day hiring: requisitions, postings, pipeline, screening, interviews, offers, communication, referrals.</td></tr>
+            <tr><td><strong>Hiring Manager</strong></td><td><code>/workspace/dashboard</code></td><td>Raises requisitions, joins interview panels, weighs in on offers and referrals.</td></tr>
+            <tr><td><strong>Candidate</strong></td><td><code>/dashboard</code></td><td>Browses open roles, applies, tracks their own applications.</td></tr>
+            <tr><td><strong>Agency</strong></td><td><code>/agency-portal</code></td><td>A separate, restricted portal: submit candidates against open jobs, see submission status.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <strong>One rule worth knowing</strong>
+        Every screen in the recruiting workspace checks your role on the server, not just in the menu — so if a tab is missing, it's not for your role, not a bug.
+      </div>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="candidates">
+      <div class="module-head">
+        <h2>Finding &amp; applying to jobs</h2>
+        <div class="role-pills"><span class="pill candidate">Candidate</span></div>
+      </div>
+      <span class="route"><code>/jobs</code> · <code>/candidate/new</code> · <code>/dashboard</code></span>
+      <p>The public career site lists every open role. Opening a job shows the full description; <strong>Apply</strong> carries you into the application form with the role pre-filled.</p>
+      <ul>
+        <li>The application form captures your profile once — contact details, experience, current/expected CTC, notice period, skills, and links to your LinkedIn, portfolio, or GitHub.</li>
+        <li><strong>Resume:</strong> either upload the file directly (PDF, DOC, or DOCX — 5 MB max) or paste a link if it's hosted elsewhere. Uploading a file replaces any link you'd pasted.</li>
+        <li>Your <strong>Dashboard</strong> lists everything you've applied to with a live status badge, and lets you edit an application or withdraw it while it's still open.</li>
+        <li>If someone referred you, they'll send a link containing <code>?ref=</code> and a code — apply through it and you're automatically credited to them, no extra step on your end.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="dashboard">
+      <div class="module-head">
+        <h2>Dashboard</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill staff">Hiring Manager</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/dashboard</code></span>
+      <p>The landing page for the recruiting workspace — built to surface what needs attention rather than just totals.</p>
+      <ul>
+        <li>Stat tiles: open jobs, requisitions pending your approval, active candidates, interviews scheduled today.</li>
+        <li>A hiring funnel showing how many candidates sit at each stage right now.</li>
+        <li>Recently applied candidates and your next few upcoming interviews, both one click from full detail.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="requisitions">
+      <div class="module-head">
+        <h2>Requisitions</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill staff">Hiring Manager</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/requisitions</code></span>
+      <p>Every open role starts as a manpower request. <strong>+ New Requisition</strong> asks for the title, department, location, vacancies, priority, whether it's a new seat or a replacement, a budget reference, and required skills — it saves as <code>Draft</code>.</p>
+      <ul>
+        <li>From Draft, <strong>Submit</strong> moves it to <code>Pending Approval</code>; an approver clicks <strong>Approve</strong> or <strong>Reject</strong> (with a reason).</li>
+        <li>An approved requisition can be put <strong>On Hold</strong> and later <strong>Reopened</strong>, or <strong>Closed</strong> once it's filled.</li>
+        <li>Every transition is timestamped — click <strong>Audit</strong> on any requisition to see exactly who did what, and when.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="job-postings">
+      <div class="module-head">
+        <h2>Job Postings</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/jobs</code></span>
+      <p>Once a requisition is approved, publish the actual job. Beyond the basics, the <strong>Job Description Builder</strong> section separates must-have skills from nice-to-have, and adds work mode, education requirement, benefits, and equal-opportunity/legal text.</p>
+      <ul>
+        <li><strong>Publish</strong> records which channels a role has gone out on — career site, LinkedIn, Indeed, Naukri, referral, or other — each with its own status and optional expiry date.</li>
+        <li><strong>Pipeline</strong> jumps straight to that job's kanban board; <strong>Close</strong> retires the posting once it's filled.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="pipeline">
+      <div class="module-head">
+        <h2>Pipeline</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill staff">Hiring Manager</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/pipeline</code></span>
+      <p>Pick a job and drag candidate cards between stage columns. Every move is written to that candidate's history with who made it and, optionally, why.</p>
+      <div class="stage-track">
+        <span class="stage-chip">Applied</span><span class="stage-arrow">→</span>
+        <span class="stage-chip">Screening</span><span class="stage-arrow">→</span>
+        <span class="stage-chip">Shortlisted</span><span class="stage-arrow">→</span>
+        <span class="stage-chip">Interview</span><span class="stage-arrow">→</span>
+        <span class="stage-chip">Assessment</span><span class="stage-arrow">→</span>
+        <span class="stage-chip">Final Evaluation</span><span class="stage-arrow">→</span>
+        <span class="stage-chip gold">Offer</span><span class="stage-arrow">→</span>
+        <span class="stage-chip gold">Hired</span>
+      </div>
+      <p>Clicking a card opens the full <a href="#candidate-detail">Candidate Detail</a> page rather than a quick preview — the pipeline is for moving people, the detail page is for everything else.</p>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="candidate-detail">
+      <div class="module-head">
+        <h2>Candidates &amp; Talent Search</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill staff">Hiring Manager</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/candidates</code> · <code>/workspace/talent-search</code> · <code>/workspace/talent-pools</code></span>
+      <p>The candidate detail page is the single record for one person, organized as tabs: <strong>Overview</strong> (profile, tags, recruiter notes), <strong>Pipeline</strong>, <strong>Screening</strong>, <strong>Assessments</strong>, <strong>Interviews</strong>, <strong>Offer</strong>, <strong>Onboarding</strong>, and <strong>Communication</strong>.</p>
+      <ul>
+        <li>On <strong>Overview</strong>, you can upload or replace a candidate's resume file yourself (PDF, DOC, or DOCX — 5 MB max) — useful when one arrives by email rather than through the portal.</li>
+        <li><strong>Talent Search</strong> filters everyone who's ever applied by keyword, skill, experience range, location, status, or tag — so a strong candidate from a closed role isn't lost.</li>
+        <li>Save a search you'll reuse, or add a candidate straight into a <strong>Talent Pool</strong> — a named shortlist you can return to for the next opening.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="screening">
+      <div class="module-head">
+        <h2>Screening &amp; Shortlisting</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill staff">Hiring Manager</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/screening-forms</code> · Candidate Detail → <strong>Screening</strong></span>
+      <p>Build a reusable screening form from Yes/No, text, numeric, or multiple-choice questions. Mark any question <strong>Knockout</strong> and set the expected answer.</p>
+      <div class="callout">
+        <strong>What knockout does</strong>
+        Run a screening on a candidate and answer a knockout question incorrectly — they're rejected automatically, with the reason logged to their history. No one has to remember to reject them manually.
+      </div>
+      <p>For everyone who passes, review the answers and click <strong>Shortlist</strong>, <strong>Reject</strong>, or <strong>Hold</strong> — the pipeline stage updates to match.</p>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="interviews">
+      <div class="module-head">
+        <h2>Interviews</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill staff">Hiring Manager</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/interviews</code> · Candidate Detail → <strong>Interviews</strong></span>
+      <p><strong>Schedule Interview</strong> asks for the round, type (phone, technical, HR, panel, final), date and time, mode, a meeting link or location, and the panel — pick one interviewer as <strong>Lead</strong>.</p>
+      <ul>
+        <li>Plans change: <strong>Reschedule</strong> or <strong>Cancel</strong> stay on the same interview record rather than starting over.</li>
+        <li>Each panelist submits their own scorecard: a 1–5 rating, a hire/no-hire recommendation, and free-text strengths, concerns, and comments.</li>
+        <li>Mark the round <strong>Completed</strong> or <strong>No Show</strong> once it's done.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="assessments">
+      <div class="module-head">
+        <h2>Assessments</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill staff">Hiring Manager</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/assessment-templates</code> · Candidate Detail → <strong>Assessments</strong></span>
+      <p>Define assessment templates once — type, vendor name, an external test link, a passing score, and expected duration — then reuse them across candidates.</p>
+      <ul>
+        <li><strong>Invite</strong> a candidate to an assessment and their stage moves to <code>Assessment</code> automatically.</li>
+        <li><strong>Record Result</strong> compares the score to the template's passing mark: at or above it, the candidate advances to <code>Final Evaluation</code>; below it, they're rejected — both without a separate manual step.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="offers">
+      <div class="module-head">
+        <h2>Offers</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill staff">Hiring Manager</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/offers</code> · Candidate Detail → <strong>Offer</strong></span>
+      <p>Create an offer with base salary, bonus, equity notes, benefits, and a validity date. It starts as <code>Draft</code>, then moves through <strong>Submit for Approval</strong> → <strong>Approve</strong> → <strong>Mark Sent</strong> — which emails the candidate.</p>
+      <ul>
+        <li>If terms change, <strong>Log Negotiation</strong> updates the figures while keeping the full history of what was offered when.</li>
+        <li><strong>Mark Accepted</strong> does three things at once: the candidate's stage becomes <code>Offer Accepted</code>, a pre-joining checklist is created for them automatically, and a hire record is queued for HR/ERP handoff.</li>
+        <li><strong>Reject</strong> or <strong>Withdraw</strong> close it out the other way, each with its own audit trail.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="onboarding">
+      <div class="module-head">
+        <h2>Onboarding</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route">Candidate Detail → <strong>Onboarding</strong></span>
+      <p>Appears once an offer is accepted. Set the <strong>Joining Date</strong>, track <strong>Background Verification</strong> through Not Started → In Progress → Cleared (or Flagged), and check off the pre-joining checklist — ID proof, signed offer, certificates, relieving letter, BGV consent, bank details, IT access.</p>
+      <div class="callout">
+        <strong>Handing off to HR</strong>
+        Every acceptance queues a structured hire record for your HR/ERP system. Once that system has actually received it, mark it <strong>Sent to HR/ERP</strong> here so the handoff isn't left looking unfinished.
+      </div>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="communication">
+      <div class="module-head">
+        <h2>Communication Center</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/communication</code></span>
+      <p>Three tabs. <strong>Templates</strong> holds the wording sent at each stage — application received, interview scheduled, assessment invitation, offer sent, and rejection — each written with placeholders like <code>{{FirstName}}</code>, <code>{{JobTitle}}</code>, and <code>{{CompanyName}}</code> that fill in automatically. Anyone can add a new template for a purpose the defaults don't cover.</p>
+      <ul>
+        <li><strong>SMTP Settings</strong> (Admin only) is where outgoing mail is configured — see <a href="#smtp">Email &amp; SMTP</a>.</li>
+        <li><strong>Send Log</strong> lists every email the system has attempted, with a Sent or Failed status and, on failure, the exact error — so a bounced message is never a mystery.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="agencies-staff">
+      <div class="module-head">
+        <h2>Agencies</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/agencies</code></span>
+      <p>An Admin registers each recruiting agency and issues its portal login. From here, Recruiters and Admins see every candidate an agency has submitted, alongside per-agency performance — total submissions, duplicates caught, and hires.</p>
+      <p>See <a href="#agency-portal">Agency Portal</a> for what the agency itself sees.</p>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="referrals">
+      <div class="module-head">
+        <h2>Referrals</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill staff">Hiring Manager</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/referrals</code></span>
+      <p>Choose an open job and click <strong>Generate Link</strong> — copy the resulting URL and send it to whoever you're referring. <strong>My Referrals</strong> shows every link you've shared and whether it's led to an application yet.</p>
+      <div class="callout">
+        <strong>Bonus lifecycle</strong>
+        The moment a referred candidate reaches <code>Hired</code>, their bonus status flips to <code>Pending</code> on its own. An Admin sets the amount and moves it to <code>Approved</code>, then <code>Paid</code>.
+      </div>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="analytics">
+      <div class="module-head">
+        <h2>Analytics</h2>
+        <div class="role-pills"><span class="pill staff">Recruiter</span><span class="pill staff">Hiring Manager</span><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/analytics</code></span>
+      <p>Average time-to-fill and time-to-hire, offer acceptance rate, a funnel of how many candidates ever reached each stage, source effectiveness by channel, per-recruiter productivity, and how long interview panels take to return feedback.</p>
+      <p style="color:var(--muted); font-size:.9rem;">Cost-per-hire and diversity metrics aren't shown — the system doesn't collect real budget actuals or protected-characteristic data, and a fabricated number is worse than none.</p>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="org-setup">
+      <div class="module-head">
+        <h2>Org &amp; Hiring Setup</h2>
+        <div class="role-pills"><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/org-setup</code></span>
+      <p>The reference data every other screen's dropdowns pull from, across eight tabs:</p>
+      <ul>
+        <li><strong>Departments</strong>, <strong>Locations</strong>, <strong>Job Families</strong>, <strong>Skills</strong>, and <strong>Competencies</strong> — simple named lists.</li>
+        <li><strong>Salary Bands</strong> — a min/max range per job family and level.</li>
+        <li><strong>Approval Matrices</strong> — which role must sign off within a given amount range.</li>
+        <li><strong>Interview Panels</strong> — a named, reusable group of interviewers, so you're not rebuilding the same panel for every requisition.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="smtp">
+      <div class="module-head">
+        <h2>Email &amp; SMTP</h2>
+        <div class="role-pills"><span class="pill admin">Admin</span></div>
+      </div>
+      <span class="route"><code>/workspace/communication</code> → SMTP Settings</span>
+      <p>Outgoing mail runs through whatever SMTP account you configure here — Gmail, Zoho, Zimbra, Office 365, or any other server. Choosing a <strong>Provider</strong> preset fills in the host, port, and security mode for you; pick <code>Custom</code> to enter your own.</p>
+      <ul>
+        <li>Enter the account's username, password, and the from-name/address you want candidates to see, then <strong>Save Settings</strong>.</li>
+        <li>Use <strong>Send Test</strong> to confirm it actually works before it's carrying real candidate mail.</li>
+      </ul>
+      <div class="callout warn">
+        <strong>Nothing sends until this is set</strong>
+        Every automatic email — application received, interview scheduled, offer sent — depends on this being configured. Until it is, those attempts land in the Send Log marked <code>Failed</code> with the reason, rather than silently vanishing.
+      </div>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="demo-setup">
+      <div class="module-head">
+        <h2>Local &amp; demo setup</h2>
+        <div class="role-pills"><span class="pill admin">Admin</span></div>
+      </div>
+      <p>For showing the portal to a client without touching real data, two scripts under <code>backend/Database/</code> spin up a completely separate, disposable database:</p>
+      <ul>
+        <li><code>CreateFreshDemoDatabase.sql</code> — creates a brand-new <code>RecruitmentPortal_Demo</code> database with the full schema. Your real database is never touched. Safe to re-run any time for a clean slate.</li>
+        <li><code>SeedDemoData.sql</code> — fills it with realistic sample data: 3 job postings, 5 candidates at different pipeline stages, requisitions, and interviews with scorecards. Safe to re-run — it skips seeding if already done.</li>
+      </ul>
+      <p>Seeded demo logins (all passwords work everywhere the portal checks password strength):</p>
+      <div class="table-wrap">
+        <table class="ref">
+          <thead><tr><th>Email</th><th>Password</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td><code>admin@recruitmentportal.com</code></td><td><code>Admin@123</code></td><td>Admin</td></tr>
+            <tr><td><code>recruiter@recruitmentportal.com</code></td><td><code>Recruiter@123</code></td><td>Recruiter</td></tr>
+            <tr><td><code>hiringmanager@recruitmentportal.com</code></td><td><code>Manager@123</code></td><td>Hiring Manager</td></tr>
+            <tr><td><code>candidate1/2/3@example.com</code></td><td><code>Candidate@123</code></td><td>Candidate</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>To point the app at the demo database instead of your real one, update the API's connection string to use <code>RecruitmentPortal_Demo</code> instead of <code>RecruitmentPortal</code> — either directly in <code>appsettings.json</code>, or (cleaner, since it's a one-line change to switch back) by setting the <code>ConnectionStrings__DefaultConnection</code> environment variable before starting the API.</p>
+      <div class="callout warn">
+        <strong>Never run the main deploy script against real data</strong>
+        <code>Deploy.sql</code> unconditionally drops and recreates whatever database it targets. It's meant for the very first setup, not for refreshing an environment with real hiring data in it — use the two demo scripts above for that instead.
+      </div>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="agency-portal">
+      <div class="module-head">
+        <h2>Agency Portal</h2>
+        <div class="role-pills"><span class="pill agency">Agency</span></div>
+      </div>
+      <span class="route"><code>/agency-portal</code></span>
+      <p>A separate, deliberately smaller portal — agencies see open jobs and their own submissions, nothing else in the system.</p>
+      <ul>
+        <li><strong>Submit Candidate</strong> on any open job takes name, contact details, experience, current company, expected CTC, skills, and a resume link.</li>
+        <li>If that email already exists in the system — from a direct application, another agency, or a referral — the submission is flagged as a <strong>duplicate</strong> and no new record is created. Ownership stays with whoever got there first.</li>
+        <li><strong>Your Submissions</strong> tracks every candidate you've put forward and their current status.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="roadmap">
+      <div class="module-head"><h2>Future enhancements</h2></div>
+      <p>Two pages in the product today look AI-powered but are illustrative previews, not live features — worth knowing so no one mistakes sample output for a real analysis.</p>
+      <div class="callout warn">
+        <strong>Currently mock data</strong>
+        <em>Resume Analyzer</em> (<code>/resume-analyzer</code>) pre-fills a sample resume and shows canned analysis — it does not read a candidate's actual uploaded resume. <em>Interview Guidance</em> (<code>/interview-guidance</code>) shows fixed tips, sample questions, and a checklist for a job title/department — it is not generated per candidate or per posting. Both are kept in the product as a preview of where AI could go, not as working features yet.
+      </div>
+      <p><strong>Planned AI enhancements</strong> (not yet built):</p>
+      <ul>
+        <li>Real resume parsing — read an uploaded resume file (now that upload is supported) to auto-fill the application form or extract skills automatically.</li>
+        <li>AI-assisted resume-to-job matching score, so a recruiter can rank candidates against a specific posting instead of reading every profile in full.</li>
+        <li>AI-generated interview questions and guidance tailored to the actual job description and candidate profile, replacing today's fixed sample content.</li>
+        <li>AI-assisted screening summaries — a short written summary of a candidate's fit, useful when working through a large pipeline.</li>
+      </ul>
+      <p><strong>Other planned enhancements</strong> (not AI-related):</p>
+      <ul>
+        <li>A self-service "forgot password" flow.</li>
+        <li>Cloud-based resume storage with malware scanning — resumes currently live on the API server's local disk.</li>
+        <li>SMS/WhatsApp candidate notifications alongside email.</li>
+        <li>Live job-board posting integrations and BGV vendor webhooks — currently tracked and logged in the system, but not wired to a real third-party service.</li>
+        <li>Cost-per-hire and diversity analytics, once real budget figures and (optionally, compliantly collected) demographic data exist to report on.</li>
+      </ul>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="stages">
+      <div class="module-head"><h2>Pipeline stages, in order</h2></div>
+      <p>The default flow a candidate moves through — organizations can add stages of their own, so treat this as the common path rather than a fixed list.</p>
+      <div class="stage-track">
+        <span class="stage-chip">Applied</span><span class="stage-arrow">→</span>
+        <span class="stage-chip">Screening</span><span class="stage-arrow">→</span>
+        <span class="stage-chip">Shortlisted</span><span class="stage-arrow">→</span>
+        <span class="stage-chip">Interview</span><span class="stage-arrow">→</span>
+        <span class="stage-chip">Assessment</span><span class="stage-arrow">→</span>
+        <span class="stage-chip">Final Evaluation</span><span class="stage-arrow">→</span>
+        <span class="stage-chip gold">Offer</span><span class="stage-arrow">→</span>
+        <span class="stage-chip gold">Offer Accepted</span><span class="stage-arrow">→</span>
+        <span class="stage-chip gold">Pre-Joining</span><span class="stage-arrow">→</span>
+        <span class="stage-chip gold">Hired</span>
+      </div>
+      <p style="margin-top:18px;">A candidate can also land in one of four terminal states, at any point:</p>
+      <div class="stage-track terminal">
+        <span class="stage-chip">Rejected</span>
+        <span class="stage-chip">Withdrawn</span>
+        <span class="stage-chip">Offer Declined</span>
+        <span class="stage-chip">Position Closed</span>
+      </div>
+    </section>
+
+    <hr class="div">
+
+    <section class="module" id="faq">
+      <div class="module-head"><h2>Tips &amp; troubleshooting</h2></div>
+      <table class="ref">
+        <tbody>
+          <tr><td style="width:38%"><strong>A candidate was rejected and I didn't do it</strong></td><td>Check their Pipeline tab's history. It's usually a failed knockout question in Screening, or an Assessment score below the template's passing mark — both reject automatically and log the reason.</td></tr>
+          <tr><td><strong>Send Test in Communication Center does nothing</strong></td><td>SMTP Settings needs to be saved first, by an Admin — see <a href="#smtp">Email &amp; SMTP</a>.</td></tr>
+          <tr><td><strong>A menu item I expect isn't there</strong></td><td>Org Setup and SMTP Settings are Admin-only; Agencies is limited to Recruiters and Admins. It's a permissions boundary, not a missing feature.</td></tr>
+          <tr><td><strong>Where do approval thresholds live?</strong></td><td>Org Setup → Approval Matrices records which role should sign off above a given amount, as a reference for whoever approves requisitions and offers.</td></tr>
+          <tr><td><strong>I want to reuse a strong candidate for a different role</strong></td><td>Add them to a Talent Pool from Talent Search, or search across every past applicant directly — nothing is limited to the job they first applied for.</td></tr>
+          <tr><td><strong>My resume upload was rejected</strong></td><td>Only PDF, DOC, and DOCX files up to 5 MB are accepted. Convert the file or paste a link instead if it's hosted elsewhere.</td></tr>
+          <tr><td><strong>I was suddenly signed out mid-task</strong></td><td>Your session expired (sessions last a couple of hours) — sign in again and pick up where you left off. This isn't an error; work you'd already saved isn't affected.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p class="foot">Recruitment Portal Handbook — covers the workspace as built. Screen labels and routes are quoted exactly as they appear in the product, so <code>this style</code> always means "click or type this."</p>
+
+  </main>
+</div>
+
+<script>
+  (function(){
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav-group a'));
+    var sections = links
+      .map(function(a){ return document.querySelector(a.getAttribute('href')); })
+      .filter(Boolean);
+
+    if (!('IntersectionObserver' in window) || sections.length === 0) return;
+
+    var byId = {};
+    links.forEach(function(a){ byId[a.getAttribute('href').slice(1)] = a; });
+
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var link = byId[entry.target.id];
+        if (!link) return;
+        if (entry.isIntersecting){
+          links.forEach(function(l){ l.classList.remove('active'); });
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
+
+    sections.forEach(function(s){ observer.observe(s); });
+  })();
+</script>

@@ -1,0 +1,78 @@
+<nav class="navbar">
+  <span class="brand">Recruitment Portal</span>
+  <div class="user-info">
+    <span class="muted">Hi, {{ auth.user()?.fullName }}</span>
+    <button class="btn btn-secondary" (click)="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="flex-between mb-4">
+    <h1>Open Positions</h1>
+    <div class="button-group">
+      <a routerLink="/resume-analyzer" class="btn btn-info">📄 Analyze Resume</a>
+      <a routerLink="/interview-guidance" class="btn btn-primary">🎯 Interview Prep</a>
+      <a routerLink="/dashboard" class="btn btn-secondary">My Applications</a>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage()" class="alert alert-error">{{ errorMessage() }}</div>
+
+  <div class="card">
+    <p *ngIf="loading()" class="muted text-center">Loading…</p>
+
+    <p *ngIf="!loading() && jobs().length === 0" class="muted text-center">
+      No open positions available at the moment.
+    </p>
+
+    <div class="jobs-grid" *ngIf="!loading() && jobs().length > 0">
+      <div class="job-card" *ngFor="let job of jobs()" (click)="viewDetails(job)">
+        <h3>{{ job.title }}</h3>
+        <p class="department"><strong>Department:</strong> {{ job.department }}</p>
+        <p class="location"><strong>Location:</strong> {{ job.location }}</p>
+        <p class="experience" *ngIf="job.experienceYearsMin">
+          <strong>Experience:</strong> {{ job.experienceYearsMin }}-{{ job.experienceYearsMax || job.experienceYearsMin }} years
+        </p>
+        <p class="salary" *ngIf="job.salaryMin">
+          <strong>Salary:</strong> ₹{{ job.salaryMin | number }} - ₹{{ job.salaryMax | number }}
+        </p>
+        <p class="description">{{ job.description | slice: 0: 150 }}...</p>
+        <button class="btn btn-primary mt-2" (click)="applyForJob(job.id); $event.stopPropagation()">
+          Apply Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job Details Modal -->
+  <div class="modal" *ngIf="selectedJob()" (click)="closeDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ selectedJob()?.title }}</h2>
+        <button class="close-btn" (click)="closeDetails()">×</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Department:</strong> {{ selectedJob()?.department }}</p>
+        <p><strong>Location:</strong> {{ selectedJob()?.location }}</p>
+        <p><strong>Employment Type:</strong> {{ selectedJob()?.employmentType || '—' }}</p>
+        <p *ngIf="selectedJob()?.salaryMin">
+          <strong>Salary Range:</strong> ₹{{ selectedJob()?.salaryMin | number }} - ₹{{ selectedJob()?.salaryMax | number }}
+        </p>
+        <p *ngIf="selectedJob()?.experienceYearsMin">
+          <strong>Experience Required:</strong> {{ selectedJob()?.experienceYearsMin }}-{{ selectedJob()?.experienceYearsMax || selectedJob()?.experienceYearsMin }} years
+        </p>
+        <h4>Description</h4>
+        <p>{{ selectedJob()?.description }}</p>
+        <h4 *ngIf="selectedJob()?.requirements">Requirements</h4>
+        <p *ngIf="selectedJob()?.requirements">{{ selectedJob()?.requirements }}</p>
+        <h4 *ngIf="selectedJob()?.responsibilities">Responsibilities</h4>
+        <p *ngIf="selectedJob()?.responsibilities">{{ selectedJob()?.responsibilities }}</p>
+        <p *ngIf="selectedJob()?.skills"><strong>Skills:</strong> {{ selectedJob()?.skills }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDetails()">Close</button>
+        <button class="btn btn-primary" (click)="applyForJob(selectedJob()?.id)">Apply Now</button>
+      </div>
+    </div>
+  </div>
+</div>

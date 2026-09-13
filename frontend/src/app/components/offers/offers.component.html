@@ -1,0 +1,29 @@
+<div class="page-header">
+  <div>
+    <h1>Offers</h1>
+    <p>Track every offer across the pipeline. Create and manage offers from a candidate's profile.</p>
+  </div>
+</div>
+
+<div class="card">
+  <p *ngIf="loading()" class="muted text-center">Loading…</p>
+  <div *ngIf="!loading() && offers().length === 0" class="empty-state">
+    <div class="empty-icon">✉️</div>
+    <p>No offers yet. Open a candidate's profile to create one.</p>
+  </div>
+
+  <table class="table" *ngIf="!loading() && offers().length > 0">
+    <thead>
+      <tr><th>Candidate</th><th>Base Salary</th><th>Total CTC</th><th>Valid Until</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let o of offers()" (click)="openCandidate(o)" style="cursor:pointer;">
+        <td>{{ candidateName(o.candidateId) }}</td>
+        <td>{{ o.baseSalary | number }}</td>
+        <td>{{ o.totalCtc ? (o.totalCtc | number) : '—' }}</td>
+        <td>{{ o.validUntil ? (o.validUntil | date: 'mediumDate') : '—' }}</td>
+        <td><span class="badge" [ngClass]="offerStatusBadgeClass(o.status)">{{ o.status }}</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

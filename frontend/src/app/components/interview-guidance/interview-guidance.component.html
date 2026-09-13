@@ -1,0 +1,111 @@
+<nav class="navbar">
+  <span class="brand">Recruitment Portal</span>
+  <div class="user-info">
+    <span class="muted">Hi, {{ auth.user()?.fullName }}</span>
+    <button class="btn btn-secondary" (click)="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="flex-between mb-4">
+    <h1>Interview Guidance</h1>
+    <a routerLink="/jobs" class="btn btn-secondary">← Back to Jobs</a>
+  </div>
+
+  <div *ngIf="errorMessage()" class="alert alert-error">{{ errorMessage() }}</div>
+
+  <div *ngIf="loading()" class="card text-center">
+    <p class="muted">Loading interview guidance...</p>
+  </div>
+
+  <div *ngIf="!loading() && guidance()" class="guidance-container">
+    <!-- Header Card -->
+    <div class="card header-card">
+      <h2>{{ guidance()?.jobTitle }}</h2>
+      <p><strong>Department:</strong> {{ guidance()?.department }}</p>
+      <p><strong>Estimated Preparation Time:</strong> {{ guidance()?.estimatedDuration }} minutes</p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tabs">
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'tips'"
+        (click)="activeTab.set('tips')">
+        💡 Interview Tips
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'questions'"
+        (click)="activeTab.set('questions')">
+        ❓ Common Questions
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === 'checklist'"
+        (click)="activeTab.set('checklist')">
+        ✓ Preparation Checklist
+      </button>
+    </div>
+
+    <!-- Tips Tab -->
+    <div class="tab-content" *ngIf="activeTab() === 'tips'">
+      <div class="card">
+        <h3>Interview Tips & Best Practices</h3>
+        <div class="tips-grid">
+          <div class="tip-card" *ngFor="let tip of guidance()?.tips">
+            <div class="tip-category">{{ tip.category }}</div>
+            <h4>{{ tip.title }}</h4>
+            <p>{{ tip.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questions Tab -->
+    <div class="tab-content" *ngIf="activeTab() === 'questions'">
+      <div class="card">
+        <h3>Common Interview Questions & Answers</h3>
+        <div class="questions-list">
+          <div class="question-item" *ngFor="let q of guidance()?.questions">
+            <div class="question-header" (click)="toggleQuestion(q.id)">
+              <div class="question-title">
+                <span class="difficulty" [class]="getDifficultyColor(q.difficulty)">
+                  {{ q.difficulty }}
+                </span>
+                <span class="category">{{ q.category }}</span>
+                <p>{{ q.question }}</p>
+              </div>
+              <span class="toggle-icon">{{ selectedQuestion() === q.id ? '▼' : '▶' }}</span>
+            </div>
+            <div class="question-answer" *ngIf="selectedQuestion() === q.id">
+              <h5>Sample Answer:</h5>
+              <p>{{ q.answer }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checklist Tab -->
+    <div class="tab-content" *ngIf="activeTab() === 'checklist'">
+      <div class="card">
+        <h3>Preparation Checklist</h3>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getChecklistProgress()"></div>
+        </div>
+        <p class="progress-text">{{ getChecklistProgress() }}% Complete</p>
+
+        <div class="checklist">
+          <label class="checklist-item" *ngFor="let item of checklist()">
+            <input
+              type="checkbox"
+              [checked]="item.completed"
+              (change)="toggleChecklistItem(item)">
+            <span [class.completed]="item.completed">{{ item.item }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

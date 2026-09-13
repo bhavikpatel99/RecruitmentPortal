@@ -1,0 +1,76 @@
+<div class="page-header">
+  <div>
+    <h1>Assessment Templates</h1>
+    <p>Technical, aptitude and behavioral test definitions used for candidate invitations.</p>
+  </div>
+  <button class="btn" (click)="openCreate()">+ New Template</button>
+</div>
+
+<div class="card">
+  <p *ngIf="loading()" class="muted text-center">Loading…</p>
+  <div *ngIf="!loading() && templates().length === 0" class="empty-state">
+    <div class="empty-icon">🧪</div>
+    <p>No assessment templates yet.</p>
+  </div>
+
+  <table class="table" *ngIf="!loading() && templates().length > 0">
+    <thead>
+      <tr><th>Title</th><th>Type</th><th>Vendor</th><th>Passing Score</th><th>Duration</th><th></th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of templates()">
+        <td>{{ t.title }}</td>
+        <td><span class="badge badge-info">{{ t.assessmentType }}</span></td>
+        <td>{{ t.vendorName || '—' }}</td>
+        <td>{{ t.passingScore ?? '—' }}</td>
+        <td>{{ t.durationMinutes ? t.durationMinutes + ' min' : '—' }}</td>
+        <td><button class="btn-icon" (click)="remove(t)">Deactivate</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-backdrop" *ngIf="showForm()" (click)="showForm.set(false)">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>New Assessment Template</h2>
+      <button class="modal-close" (click)="showForm.set(false)">&times;</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Title <span class="required-mark">*</span></label>
+        <input [(ngModel)]="form.title" name="title" required [class.invalid]="!form.title" />
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select [(ngModel)]="form.assessmentType" name="assessmentType">
+          <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Vendor</label>
+        <input [(ngModel)]="form.vendorName" name="vendorName" placeholder="e.g. HackerRank" />
+      </div>
+      <div class="form-group">
+        <label>External Link</label>
+        <input [(ngModel)]="form.externalLink" name="externalLink" placeholder="https://…" />
+      </div>
+      <div class="form-group">
+        <label>Passing Score</label>
+        <input type="number" [(ngModel)]="form.passingScore" name="passingScore" />
+      </div>
+      <div class="form-group">
+        <label>Duration (minutes)</label>
+        <input type="number" [(ngModel)]="form.durationMinutes" name="durationMinutes" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea [(ngModel)]="form.description" name="description"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="showForm.set(false)">Cancel</button>
+      <button class="btn" (click)="submit()" [disabled]="!form.title">Create</button>
+    </div>
+  </div>
+</div>

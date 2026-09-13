@@ -1,0 +1,402 @@
+<div class="page-header" *ngIf="candidate() as c">
+  <div>
+    <h1>{{ c.firstName }} {{ c.lastName }}</h1>
+    <p>{{ c.email }} • {{ c.phone || 'No phone' }} • Applied for {{ c.positionApplied || '—' }}</p>
+  </div>
+  <span class="badge" [ngClass]="stageBadgeClass(c.status)" style="font-size: 14px;">{{ c.status }}</span>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn" [class.active]="activeTab() === 'overview'" (click)="setTab('overview')">Overview</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'pipeline'" (click)="setTab('pipeline')">Pipeline</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'screening'" (click)="setTab('screening')">Screening</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'assessments'" (click)="setTab('assessments')">Assessments</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'interviews'" (click)="setTab('interviews')">Interviews</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'offer'" (click)="setTab('offer')">Offer</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'onboarding'" (click)="setTab('onboarding')">Onboarding</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'communication'" (click)="setTab('communication')">Communication</button>
+</div>
+
+<!-- Overview -->
+<div class="card" *ngIf="activeTab() === 'overview' && candidate() as c">
+  <div class="form-grid">
+    <div><strong>Experience</strong><div class="muted">{{ c.totalExperience || '—' }} yrs</div></div>
+    <div><strong>Current Company</strong><div class="muted">{{ c.currentCompany || '—' }}</div></div>
+    <div><strong>Expected CTC</strong><div class="muted">{{ c.expectedCtc || '—' }}</div></div>
+    <div><strong>Notice Period</strong><div class="muted">{{ c.noticePeriodDays || '—' }} days</div></div>
+    <div><strong>Location</strong><div class="muted">{{ c.city }}{{ c.city && c.country ? ', ' : '' }}{{ c.country }}</div></div>
+    <div><strong>Source</strong><div class="muted">{{ c.source || '—' }}</div></div>
+  </div>
+  <div class="section-title">Skills</div>
+  <p>{{ c.skills || 'No skills listed.' }}</p>
+  <div class="flex-gap mt-4">
+    <a *ngIf="c.resumeUrl" [href]="resumeDownloadUrl" target="_blank" class="btn btn-secondary">
+      View Resume{{ c.resumeFileName ? ' (' + c.resumeFileName + ')' : '' }}
+    </a>
+    <a *ngIf="c.linkedInUrl" [href]="c.linkedInUrl" target="_blank" class="btn btn-secondary">LinkedIn</a>
+  </div>
+
+  <div class="section-title">Resume</div>
+  <div class="form-group">
+    <label for="resumeFile">{{ c.resumeUrl ? 'Replace Resume File' : 'Upload Resume File' }} <span class="muted" style="font-weight:400;">(PDF, DOC, or DOCX — 5 MB max)</span></label>
+    <input id="resumeFile" type="file" accept=".pdf,.doc,.docx" [disabled]="uploadingResume()" (change)="onResumeFileSelected($event)" />
+    <div class="error-text" *ngIf="resumeFileError">{{ resumeFileError }}</div>
+    <p class="muted" style="font-size:13px; margin-top:6px;" *ngIf="uploadingResume()">Uploading…</p>
+  </div>
+
+  <div class="section-title">Tags</div>
+  <div class="flex-gap" style="flex-wrap: wrap;">
+    <span class="badge badge-purple" *ngFor="let t of tags()">
+      {{ t.tag }}
+      <button class="modal-close" style="font-size: 12px; margin-left: 4px;" (click)="removeTag(t)">&times;</button>
+    </span>
+    <input [(ngModel)]="newTag" name="newTag" placeholder="Add tag…" style="width: 140px; padding: 4px 8px;" (keyup.enter)="addTag()" />
+    <button class="btn-icon" (click)="addTag()">Add</button>
+  </div>
+
+  <div class="section-title">Recruiter Notes</div>
+  <div class="form-group">
+    <textarea [(ngModel)]="newNote" name="newNote" placeholder="Add a note about this candidate…"></textarea>
+  </div>
+  <button class="btn-icon" (click)="addNote()">Add Note</button>
+  <div *ngFor="let n of notes()" style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+    <div class="flex-between">
+      <strong style="font-size: 13px;">{{ n.createdByName || 'Unknown' }}</strong>
+      <span class="muted" style="font-size: 12px;">{{ n.createdAt | date: 'medium' }}</span>
+    </div>
+    <p style="font-size: 13px; margin: 4px 0 0;">{{ n.note }}</p>
+  </div>
+</div>
+
+<!-- Pipeline -->
+<div class="card" *ngIf="activeTab() === 'pipeline'">
+  <div class="page-header">
+    <div class="section-title" style="margin:0;">Move Stage</div>
+  </div>
+  <div class="flex-gap" style="flex-wrap: wrap;">
+    <button class="btn-icon" *ngFor="let s of ['Screening','Shortlisted','Interview','Assessment','Final Evaluation','Offer','Hired','Rejected','Withdrawn']" (click)="changeStage(s)">{{ s }}</button>
+  </div>
+
+  <div class="section-title">History</div>
+  <ul style="list-style:none; padding:0; margin:0;">
+    <li *ngFor="let h of stageHistory()" style="padding:10px 0; border-bottom:1px solid var(--border);">
+      <div class="flex-between">
+        <span>{{ h.fromStatus || 'New' }} → <strong>{{ h.toStatus }}</strong></span>
+        <span class="muted" style="font-size:12px;">{{ h.changedAt | date: 'medium' }}</span>
+      </div>
+      <div class="muted" style="font-size:13px;" *ngIf="h.reason">{{ h.reason }}</div>
+    </li>
+  </ul>
+</div>
+
+<!-- Screening -->
+<div *ngIf="activeTab() === 'screening'">
+  <div class="page-header">
+    <div class="section-title" style="margin:0;">Screening Responses</div>
+    <button class="btn" (click)="openRunScreening()" [disabled]="screeningForms().length === 0">+ Run Screening</button>
+  </div>
+  <p *ngIf="screeningForms().length === 0" class="muted">No screening forms exist yet. Create one under Screening Forms.</p>
+
+  <div class="card" *ngFor="let r of screeningResponses()" style="margin-bottom: 12px;">
+    <div class="flex-between">
+      <div>
+        <strong>{{ r.formTitle }}</strong>
+        <span class="badge" [ngClass]="r.knockoutFailed ? 'badge-danger' : 'badge-success'" style="margin-left: 8px;">
+          {{ r.knockoutFailed ? 'Knockout Failed' : 'Passed Knockout' }}
+        </span>
+        <span class="badge badge-neutral" style="margin-left: 6px;" *ngIf="r.recommendation">{{ r.recommendation }}</span>
+      </div>
+      <button class="btn-icon" (click)="toggleResponseDetail(r)">{{ expandedResponseId() === r.id ? 'Hide' : 'View' }} Answers</button>
+    </div>
+    <p class="muted" style="font-size: 13px; margin: 6px 0 0;">{{ r.submittedAt | date: 'medium' }}<span *ngIf="r.recruiterNotes"> — {{ r.recruiterNotes }}</span></p>
+
+    <div *ngIf="expandedResponseId() === r.id" style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;">
+      <div *ngFor="let a of responseAnswers()" style="font-size: 13px; margin-bottom: 6px;">
+        <strong>{{ a.questionText }}</strong> — {{ a.answerText }}
+        <span *ngIf="a.isKnockout" class="badge" [ngClass]="a.passedKnockout ? 'badge-success' : 'badge-danger'" style="margin-left: 6px;">
+          {{ a.passedKnockout ? 'OK' : 'Failed' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="flex-gap mt-2" *ngIf="!r.recommendation || r.recommendation === ''">
+      <button class="btn-icon" *ngFor="let rec of recommendations" (click)="decide(r, rec)">{{ rec }}</button>
+    </div>
+  </div>
+  <p *ngIf="screeningForms().length > 0 && screeningResponses().length === 0" class="muted">No screening submitted yet for this candidate.</p>
+</div>
+
+<!-- Assessments -->
+<div *ngIf="activeTab() === 'assessments'">
+  <div class="page-header">
+    <div class="section-title" style="margin:0;">Assessment Invitations</div>
+    <button class="btn" (click)="openInvite()" [disabled]="assessmentTemplates().length === 0">+ Invite to Assessment</button>
+  </div>
+  <p *ngIf="assessmentTemplates().length === 0" class="muted">No assessment templates exist yet. Create one under Assessment Templates.</p>
+
+  <div class="card" *ngFor="let inv of candidateInvitations()" style="margin-bottom: 12px;">
+    <div class="flex-between">
+      <div>
+        <strong>{{ inv.assessmentTitle }}</strong>
+        <span class="badge badge-neutral" style="margin-left: 8px;">{{ inv.assessmentType }}</span>
+        <span class="badge" [ngClass]="inv.status === 'Completed' ? 'badge-success' : 'badge-info'" style="margin-left: 6px;">{{ inv.status }}</span>
+        <span *ngIf="inv.passFail" class="badge" [ngClass]="inv.passFail === 'Pass' ? 'badge-success' : 'badge-danger'" style="margin-left: 6px;">{{ inv.passFail }} ({{ inv.score }})</span>
+      </div>
+      <span class="muted" style="font-size: 12px;">Deadline: {{ inv.deadline ? (inv.deadline | date: 'mediumDate') : '—' }}</span>
+    </div>
+
+    <div class="form-grid mt-2" *ngIf="inv.status !== 'Completed'">
+      <div class="form-group">
+        <label>Score</label>
+        <input type="number" [(ngModel)]="getDraft(inv.id).score" name="score{{inv.id}}" />
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <input [(ngModel)]="getDraft(inv.id).notes" name="notes{{inv.id}}" />
+      </div>
+    </div>
+    <button class="btn-icon" *ngIf="inv.status !== 'Completed'" (click)="recordResult(inv)">Record Result</button>
+  </div>
+  <p *ngIf="assessmentTemplates().length > 0 && candidateInvitations().length === 0" class="muted">No assessments invited yet.</p>
+</div>
+
+<!-- Interviews -->
+<div *ngIf="activeTab() === 'interviews'">
+  <div class="section-title">Interviews</div>
+  <div class="card" *ngFor="let i of candidateInterviews()" style="margin-bottom: 12px;">
+    <div class="flex-between">
+      <strong>{{ i.interviewType }} — Round {{ i.roundNumber }}</strong>
+      <span class="badge badge-info">{{ i.status }}</span>
+    </div>
+    <p class="muted" style="font-size: 13px;">{{ i.scheduledAt ? (i.scheduledAt | date: 'medium') : 'Not scheduled' }} • {{ i.mode }}</p>
+  </div>
+  <p *ngIf="candidateInterviews().length === 0" class="muted">No interviews scheduled. Use the Interviews page to schedule one.</p>
+  <a routerLink="/workspace/interviews" class="btn btn-secondary mt-2">Go to Interviews</a>
+</div>
+
+<!-- Offer -->
+<div *ngIf="activeTab() === 'offer'">
+  <div class="page-header">
+    <div class="section-title" style="margin:0;">Offers</div>
+    <button class="btn" (click)="openCreateOffer()">+ New Offer</button>
+  </div>
+
+  <div class="card" *ngFor="let o of offers()" style="margin-bottom: 12px;">
+    <div class="flex-between" style="cursor:pointer;" (click)="toggleOfferAudit(o)">
+      <div>
+        <strong>{{ o.baseSalary | number }}</strong> base
+        <span class="muted" *ngIf="o.totalCtc"> • {{ o.totalCtc | number }} CTC</span>
+        <span class="badge" [ngClass]="offerStatusBadgeClass(o.status)" style="margin-left: 8px;">{{ o.status }}</span>
+      </div>
+      <span class="muted" style="font-size: 12px;">Valid until {{ o.validUntil ? (o.validUntil | date: 'mediumDate') : '—' }}</span>
+    </div>
+
+    <div class="flex-gap mt-2" style="flex-wrap: wrap;">
+      <button class="btn-icon" *ngIf="o.status === 'Draft'" (click)="offerAction(o, 'PendingApproval')">Submit for Approval</button>
+      <button class="btn-icon" *ngIf="o.status === 'PendingApproval'" (click)="offerAction(o, 'Approved')">Approve</button>
+      <button class="btn-icon" *ngIf="o.status === 'Approved'" (click)="offerAction(o, 'Sent')">Mark Sent</button>
+      <button class="btn-icon" *ngIf="o.status === 'Sent'" (click)="offerAction(o, 'Accepted')">Mark Accepted</button>
+      <button class="btn-icon" *ngIf="o.status === 'Sent'" (click)="offerAction(o, 'Rejected')">Mark Rejected</button>
+      <button class="btn-icon" *ngIf="o.status !== 'Accepted' && o.status !== 'Rejected' && o.status !== 'Withdrawn'" (click)="offerAction(o, 'Withdrawn')">Withdraw</button>
+    </div>
+
+    <div *ngIf="expandedOfferId() === o.id" style="margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
+      <div class="section-title" style="margin-top:0;">Negotiation Log</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>New Base Salary (optional)</label>
+          <input type="number" [(ngModel)]="negotiationSalary" name="negotiationSalary" />
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <input [(ngModel)]="negotiationNotes" name="negotiationNotes" placeholder="What was discussed…" />
+        </div>
+      </div>
+      <button class="btn-icon" (click)="submitNegotiation(o)">Log Negotiation</button>
+
+      <div class="section-title">Audit Trail</div>
+      <ul style="list-style:none; padding:0; margin:0;">
+        <li *ngFor="let a of offerAudit()" style="padding:8px 0; border-bottom:1px solid var(--border); font-size:13px;">
+          <div class="flex-between">
+            <strong>{{ a.action }}</strong>
+            <span class="muted">{{ a.performedAt | date: 'short' }}</span>
+          </div>
+          <div class="muted" *ngIf="a.notes">{{ a.notes }}</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <p *ngIf="offers().length === 0" class="muted">No offers created yet.</p>
+</div>
+
+<!-- Onboarding -->
+<div *ngIf="activeTab() === 'onboarding'">
+  <div *ngIf="!activeChecklist" class="empty-state">
+    <div class="empty-icon">✅</div>
+    <p>No pre-joining checklist yet — one is created automatically when an offer is accepted.</p>
+  </div>
+
+  <div class="card" *ngIf="activeChecklist">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Joining Date</label>
+        <div class="flex-gap">
+          <input type="date" [(ngModel)]="joiningDateDraft" name="joiningDateDraft" />
+          <button class="btn-icon" (click)="saveJoiningDate()">Save</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Background Verification</label>
+        <select [ngModel]="activeChecklist!.bgvStatus" (ngModelChange)="updateBgv($event)" name="bgvStatus">
+          <option *ngFor="let s of bgvStatuses" [value]="s">{{ s }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-title">Checklist</div>
+    <div *ngFor="let t of tasks()" class="flex-between" style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+      <label class="checkbox-label">
+        <input type="checkbox" [checked]="t.isCompleted" (change)="toggleTask(t)" />
+        <span [style.textDecoration]="t.isCompleted ? 'line-through' : 'none'">{{ t.taskName }}</span>
+      </label>
+      <span class="muted" style="font-size: 12px;" *ngIf="t.completedAt">{{ t.completedAt | date: 'mediumDate' }}</span>
+    </div>
+  </div>
+
+  <div class="section-title">Hire Event (HR/ERP Handoff)</div>
+  <div class="card" *ngFor="let h of hireEvents()" style="margin-bottom: 12px;">
+    <div class="flex-between">
+      <span class="badge" [ngClass]="h.status === 'Sent' ? 'badge-success' : 'badge-warning'">{{ h.status }}</span>
+      <button class="btn-icon" *ngIf="h.status !== 'Sent'" (click)="markHireEventSent(h)">Mark Sent to HR/ERP</button>
+    </div>
+    <pre style="font-size: 12px; background: var(--bg); padding: 10px; border-radius: 8px; overflow-x: auto; margin-top: 8px;">{{ h.payload }}</pre>
+  </div>
+  <p *ngIf="hireEvents().length === 0" class="muted">No hire event published yet.</p>
+</div>
+
+<!-- Communication -->
+<div *ngIf="activeTab() === 'communication'">
+  <div class="card mb-4">
+    <div class="section-title" style="margin-top:0;">Send Email</div>
+    <div class="flex-gap">
+      <select [(ngModel)]="selectedTemplateCode" name="selectedTemplateCode" style="min-width: 240px;">
+        <option value="" disabled selected>Choose a template…</option>
+        <option *ngFor="let t of emailTemplates()" [value]="t.code">{{ t.name }}</option>
+      </select>
+      <button class="btn" (click)="sendSelectedTemplate()">Send</button>
+    </div>
+  </div>
+
+  <div class="section-title">History</div>
+  <table class="table" *ngIf="emailLog().length > 0">
+    <thead><tr><th>Subject</th><th>Template</th><th>Status</th><th>When</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let l of emailLog()">
+        <td>{{ l.subject }}</td>
+        <td class="muted">{{ l.templateCode || '—' }}</td>
+        <td><span class="badge" [ngClass]="l.status === 'Sent' ? 'badge-success' : l.status === 'Failed' ? 'badge-danger' : 'badge-warning'">{{ l.status }}</span></td>
+        <td class="muted">{{ l.createdAt | date: 'short' }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="emailLog().length === 0" class="muted">No emails sent to this candidate yet.</p>
+</div>
+
+<!-- Create offer modal -->
+<div class="modal-backdrop" *ngIf="showOfferForm()" (click)="showOfferForm.set(false)">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>New Offer</h2>
+      <button class="modal-close" (click)="showOfferForm.set(false)">&times;</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Base Salary <span class="required-mark">*</span></label>
+        <input type="number" min="0" [(ngModel)]="offerDraft.baseSalary" name="baseSalary" required
+               [class.invalid]="!offerDraft.baseSalary" />
+        <div class="error-text" *ngIf="!offerDraft.baseSalary">Base salary is required.</div>
+      </div>
+      <div class="form-group">
+        <label>Bonus</label>
+        <input type="number" [(ngModel)]="offerDraft.bonus" name="bonus" />
+      </div>
+      <div class="form-group">
+        <label>Total CTC</label>
+        <input type="number" [(ngModel)]="offerDraft.totalCtc" name="totalCtc" />
+      </div>
+      <div class="form-group">
+        <label>Valid Until</label>
+        <input type="date" [(ngModel)]="offerDraft.validUntil" name="validUntil" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Equity Details</label>
+      <input [(ngModel)]="offerDraft.equityDetails" name="equityDetails" />
+    </div>
+    <div class="form-group">
+      <label>Other Benefits</label>
+      <textarea [(ngModel)]="offerDraft.otherBenefits" name="otherBenefits"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="showOfferForm.set(false)">Cancel</button>
+      <button class="btn" (click)="submitOffer()" [disabled]="!offerDraft.baseSalary">Create Draft</button>
+    </div>
+  </div>
+</div>
+
+<!-- Run screening modal -->
+<div class="modal-backdrop" *ngIf="showRunScreening()" (click)="showRunScreening.set(false)">
+  <div class="modal" style="max-width: 600px;" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Run Screening</h2>
+      <button class="modal-close" (click)="showRunScreening.set(false)">&times;</button>
+    </div>
+    <div class="form-group">
+      <label>Screening Form</label>
+      <select [(ngModel)]="selectedFormId" (ngModelChange)="loadQuestions()">
+        <option *ngFor="let f of screeningForms()" [ngValue]="f.id">{{ f.title }}</option>
+      </select>
+    </div>
+    <div class="form-group" *ngFor="let q of activeQuestions()">
+      <label>{{ q.questionText }} <span *ngIf="q.isKnockout" class="badge badge-warning">Knockout</span></label>
+      <select *ngIf="q.questionType === 'YesNo'" [(ngModel)]="answers[q.id!]" name="ans{{q.id}}">
+        <option value="">—</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+      <input *ngIf="q.questionType !== 'YesNo'" [(ngModel)]="answers[q.id!]" name="ans{{q.id}}" />
+    </div>
+    <div class="form-group">
+      <label>Recruiter Notes</label>
+      <textarea [(ngModel)]="recruiterNotes" name="recruiterNotes"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="showRunScreening.set(false)">Cancel</button>
+      <button class="btn" (click)="submitScreening()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invite to assessment modal -->
+<div class="modal-backdrop" *ngIf="showInviteForm()" (click)="showInviteForm.set(false)">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Invite to Assessment</h2>
+      <button class="modal-close" (click)="showInviteForm.set(false)">&times;</button>
+    </div>
+    <div class="form-group">
+      <label>Assessment</label>
+      <select [(ngModel)]="inviteTemplateId" name="inviteTemplateId">
+        <option *ngFor="let t of assessmentTemplates()" [ngValue]="t.id">{{ t.title }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Deadline</label>
+      <input type="date" [(ngModel)]="inviteDeadline" name="inviteDeadline" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="showInviteForm.set(false)">Cancel</button>
+      <button class="btn" (click)="submitInvite()">Send Invitation</button>
+    </div>
+  </div>
+</div>

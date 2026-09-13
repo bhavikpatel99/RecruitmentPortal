@@ -1,0 +1,172 @@
+<div class="page-header">
+  <div>
+    <h1>Job Requisitions</h1>
+    <p>Manpower requests through approval, hold, and closure.</p>
+  </div>
+  <button class="btn" (click)="openCreate()">+ New Requisition</button>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn" [class.active]="statusFilter() === 'All'" (click)="statusFilter.set('All')">All</button>
+  <button class="tab-btn" [class.active]="statusFilter() === 'Draft'" (click)="statusFilter.set('Draft')">Draft</button>
+  <button class="tab-btn" [class.active]="statusFilter() === 'PendingApproval'" (click)="statusFilter.set('PendingApproval')">Pending Approval</button>
+  <button class="tab-btn" [class.active]="statusFilter() === 'Approved'" (click)="statusFilter.set('Approved')">Approved</button>
+  <button class="tab-btn" [class.active]="statusFilter() === 'OnHold'" (click)="statusFilter.set('OnHold')">On Hold</button>
+  <button class="tab-btn" [class.active]="statusFilter() === 'Rejected'" (click)="statusFilter.set('Rejected')">Rejected</button>
+  <button class="tab-btn" [class.active]="statusFilter() === 'Closed'" (click)="statusFilter.set('Closed')">Closed</button>
+</div>
+
+<div class="card">
+  <p *ngIf="loading()" class="muted text-center">Loading…</p>
+
+  <div *ngIf="!loading() && filtered.length === 0" class="empty-state">
+    <div class="empty-icon">📋</div>
+    <p>No requisitions in this view.</p>
+  </div>
+
+  <table class="table" *ngIf="!loading() && filtered.length > 0">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Department</th>
+        <th>Vacancies</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of filtered">
+        <td>{{ r.title }}</td>
+        <td>{{ r.department }}</td>
+        <td>{{ r.vacancies }}</td>
+        <td>{{ r.priority }}</td>
+        <td><span class="badge" [ngClass]="statusBadgeClass(r.status)">{{ r.status }}</span></td>
+        <td class="muted">{{ r.createdAt | date: 'mediumDate' }}</td>
+        <td>
+          <div class="flex-gap">
+            <button *ngIf="r.status === 'Draft'" class="btn-icon" (click)="submitForApproval(r)">Submit</button>
+            <button *ngIf="r.status === 'PendingApproval'" class="btn-icon" (click)="approve(r)">Approve</button>
+            <button *ngIf="r.status === 'PendingApproval'" class="btn-icon" (click)="openReject(r)">Reject</button>
+            <button *ngIf="r.status === 'Approved'" class="btn-icon" (click)="hold(r)">Hold</button>
+            <button *ngIf="r.status === 'OnHold'" class="btn-icon" (click)="reopen(r)">Reopen</button>
+            <button *ngIf="r.status !== 'Closed'" class="btn-icon" (click)="close(r)">Close</button>
+            <button class="btn-icon" (click)="viewAudit(r)">Audit</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Create requisition modal -->
+<div class="modal-backdrop" *ngIf="showForm()" (click)="closeForm()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>New Job Requisition</h2>
+      <button class="modal-close" (click)="closeForm()">&times;</button>
+    </div>
+    <form #reqForm="ngForm" (ngSubmit)="submit()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Title <span class="required-mark">*</span></label>
+          <input name="title" #titleModel="ngModel" [(ngModel)]="form.title" required
+                 [class.invalid]="titleModel.touched && titleModel.invalid" />
+          <div class="error-text" *ngIf="titleModel.touched && titleModel.invalid">Title is required.</div>
+        </div>
+        <div class="form-group">
+          <label>Department <span class="required-mark">*</span></label>
+          <input name="department" #deptModel="ngModel" [(ngModel)]="form.department" required
+                 [class.invalid]="deptModel.touched && deptModel.invalid" />
+          <div class="error-text" *ngIf="deptModel.touched && deptModel.invalid">Department is required.</div>
+        </div>
+        <div class="form-group">
+          <label>Location <span class="required-mark">*</span></label>
+          <input name="location" #locModel="ngModel" [(ngModel)]="form.location" required
+                 [class.invalid]="locModel.touched && locModel.invalid" />
+          <div class="error-text" *ngIf="locModel.touched && locModel.invalid">Location is required.</div>
+        </div>
+        <div class="form-group">
+          <label>Employment Type</label>
+          <input name="employmentType" [(ngModel)]="form.employmentType" />
+        </div>
+        <div class="form-group">
+          <label>Vacancies <span class="required-mark">*</span></label>
+          <input type="number" min="1" name="vacancies" #vacModel="ngModel" [(ngModel)]="form.vacancies" required
+                 [class.invalid]="vacModel.touched && vacModel.invalid" />
+          <div class="error-text" *ngIf="vacModel.touched && vacModel.invalid">At least 1 vacancy is required.</div>
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select name="priority" [(ngModel)]="form.priority">
+            <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Requisition Type</label>
+          <select name="requisitionType" [(ngModel)]="form.requisitionType">
+            <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Budget Reference</label>
+          <input name="budgetReference" [(ngModel)]="form.budgetReference" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Required Skills</label>
+        <input name="requiredSkills" [(ngModel)]="form.requiredSkills" />
+      </div>
+      <div class="form-group">
+        <label>Justification Notes</label>
+        <textarea name="justificationNotes" [(ngModel)]="form.justificationNotes"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+        <button type="submit" class="btn" [disabled]="reqForm.invalid">Create Draft</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Reject modal -->
+<div class="modal-backdrop" *ngIf="showRejectModal()" (click)="showRejectModal.set(false)">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Reject Requisition</h2>
+      <button class="modal-close" (click)="showRejectModal.set(false)">&times;</button>
+    </div>
+    <div class="form-group">
+      <label>Rejection Reason</label>
+      <textarea [(ngModel)]="rejectionReason" name="rejectionReason" placeholder="Explain why this requisition is being rejected…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="showRejectModal.set(false)">Cancel</button>
+      <button class="btn btn-danger" (click)="confirmReject()">Reject</button>
+    </div>
+  </div>
+</div>
+
+<!-- Audit trail modal -->
+<div class="modal-backdrop" *ngIf="auditForId() !== null" (click)="closeAudit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Audit Trail</h2>
+      <button class="modal-close" (click)="closeAudit()">&times;</button>
+    </div>
+    <div *ngIf="auditTrail().length === 0" class="muted">No audit entries yet.</div>
+    <ul style="list-style:none; padding:0; margin:0;">
+      <li *ngFor="let a of auditTrail()" style="padding:10px 0; border-bottom:1px solid var(--border);">
+        <div class="flex-between">
+          <strong>{{ a.action }}</strong>
+          <span class="muted" style="font-size:12px;">{{ a.performedAt | date: 'medium' }}</span>
+        </div>
+        <div class="muted" style="font-size:13px;" *ngIf="a.fromStatus || a.toStatus">
+          {{ a.fromStatus || '—' }} → {{ a.toStatus || '—' }}
+        </div>
+        <div style="font-size:13px;" *ngIf="a.notes">{{ a.notes }}</div>
+      </li>
+    </ul>
+  </div>
+</div>

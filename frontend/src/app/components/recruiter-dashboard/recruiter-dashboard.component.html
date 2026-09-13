@@ -1,0 +1,92 @@
+<div class="page-header">
+  <div>
+    <h1>Welcome back, {{ auth.user()?.fullName }}</h1>
+    <p>Here's what needs your attention today.</p>
+  </div>
+</div>
+
+<p *ngIf="loading()" class="muted text-center">Loading…</p>
+
+<ng-container *ngIf="!loading()">
+  <div class="stat-grid">
+    <div class="stat-card accent-primary">
+      <div class="stat-label">Open Jobs</div>
+      <div class="stat-value">{{ openJobsCount }}</div>
+      <a routerLink="/workspace/jobs" class="stat-sub">View postings →</a>
+    </div>
+    <div class="stat-card accent-warning">
+      <div class="stat-label">Requisitions Pending Approval</div>
+      <div class="stat-value">{{ pendingApprovalCount }}</div>
+      <a routerLink="/workspace/requisitions" class="stat-sub">Review requisitions →</a>
+    </div>
+    <div class="stat-card accent-success">
+      <div class="stat-label">Active Candidates</div>
+      <div class="stat-value">{{ activeCandidatesCount }}</div>
+      <a routerLink="/workspace/pipeline" class="stat-sub">View pipeline →</a>
+    </div>
+    <div class="stat-card accent-danger">
+      <div class="stat-label">Interviews Today</div>
+      <div class="stat-value">{{ interviewsTodayCount }}</div>
+      <a routerLink="/workspace/interviews" class="stat-sub">View schedule →</a>
+    </div>
+  </div>
+
+  <div class="split-layout">
+    <div class="card">
+      <div class="section-title">Hiring Funnel</div>
+      <table class="table">
+        <tbody>
+          <tr>
+            <td>Applied</td>
+            <td><span class="badge badge-neutral">{{ funnelCount('Applied') }}</span></td>
+          </tr>
+          <tr>
+            <td>Screening</td>
+            <td><span class="badge badge-info">{{ funnelCount('Screening') }}</span></td>
+          </tr>
+          <tr>
+            <td>Shortlisted</td>
+            <td><span class="badge badge-info">{{ funnelCount('Shortlisted') }}</span></td>
+          </tr>
+          <tr>
+            <td>Interview</td>
+            <td><span class="badge badge-warning">{{ funnelCount('Interview') }}</span></td>
+          </tr>
+          <tr>
+            <td>Offer</td>
+            <td><span class="badge badge-purple">{{ funnelCount('Offer') }}</span></td>
+          </tr>
+          <tr>
+            <td>Hired</td>
+            <td><span class="badge badge-success">{{ funnelCount('Hired') }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">Recently Applied</div>
+      <div *ngIf="recentCandidates.length === 0" class="muted">No candidates yet.</div>
+      <table class="table" *ngIf="recentCandidates.length > 0">
+        <tbody>
+          <tr *ngFor="let c of recentCandidates">
+            <td>{{ c.firstName }} {{ c.lastName }}</td>
+            <td class="muted">{{ c.positionApplied || '—' }}</td>
+            <td><span class="badge" [ngClass]="stageBadgeClass(c.status)">{{ c.status }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Upcoming Interviews</div>
+      <div *ngIf="upcomingInterviews.length === 0" class="muted">No interviews scheduled.</div>
+      <div *ngFor="let i of upcomingInterviews" style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+        <div class="flex-between">
+          <strong style="font-size: 13px;">{{ candidateName(i.candidateId) }}</strong>
+          <span class="muted" style="font-size: 12px;">{{ i.scheduledAt | date: 'short' }}</span>
+        </div>
+        <div class="muted" style="font-size: 12px;">{{ i.interviewType }} • Round {{ i.roundNumber }}</div>
+      </div>
+      <a routerLink="/workspace/interviews" class="btn btn-secondary btn-block mt-4">Manage Interviews</a>
+    </div>
+  </div>
+</ng-container>

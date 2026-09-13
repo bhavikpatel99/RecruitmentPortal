@@ -1,0 +1,30 @@
+<div class="page-header">
+  <div>
+    <h1>Candidates</h1>
+    <p>Browse and search every candidate application.</p>
+  </div>
+  <input [(ngModel)]="search" placeholder="Search name, email, skills…" style="max-width: 280px;" />
+</div>
+
+<div class="card">
+  <p *ngIf="loading()" class="muted text-center">Loading…</p>
+  <div *ngIf="!loading() && filtered.length === 0" class="empty-state">
+    <div class="empty-icon">🔍</div>
+    <p>No candidates match.</p>
+  </div>
+
+  <table class="table" *ngIf="!loading() && filtered.length > 0">
+    <thead>
+      <tr><th>Name</th><th>Position</th><th>Experience</th><th>Source</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of filtered" (click)="open(c)" style="cursor:pointer;">
+        <td>{{ c.firstName }} {{ c.lastName }}</td>
+        <td>{{ c.positionApplied || '—' }}</td>
+        <td>{{ c.totalExperience != null ? c.totalExperience + ' yrs' : '—' }}</td>
+        <td>{{ c.source || '—' }}</td>
+        <td><span class="badge" [ngClass]="stageBadgeClass(c.status)">{{ c.status }}</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,65 @@
+<div class="page-header">
+  <div>
+    <h1>Employee Referrals</h1>
+    <p>Generate a referral link for an open job and track its status and bonus.</p>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="flex-gap">
+    <select [(ngModel)]="selectedJobId" name="selectedJobId" style="min-width: 240px;">
+      <option [ngValue]="null" disabled selected>Choose a job…</option>
+      <option *ngFor="let j of jobs()" [ngValue]="j.id">{{ j.title }}</option>
+    </select>
+    <button class="btn" (click)="generateLink()" [disabled]="!selectedJobId">Generate Link</button>
+  </div>
+  <div class="flex-gap mt-2" *ngIf="generatedLink()">
+    <input [value]="generatedLink()" readonly style="flex:1;" />
+    <button class="btn-icon" (click)="copyLink()">Copy</button>
+  </div>
+</div>
+
+<div class="section-title">My Referrals</div>
+<div class="card mb-4">
+  <table class="table" *ngIf="myReferrals().length > 0">
+    <thead><tr><th>Job</th><th>Candidate</th><th>Status</th><th>Bonus</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let r of myReferrals()">
+        <td>{{ r.jobTitle }}</td>
+        <td>
+          <span *ngIf="r.candidateId">{{ r.firstName }} {{ r.lastName }}</span>
+          <span *ngIf="!r.candidateId" class="muted">Awaiting application</span>
+        </td>
+        <td><span class="badge badge-info">{{ r.status }}</span></td>
+        <td>
+          <span class="badge" [ngClass]="r.bonusStatus === 'Paid' ? 'badge-success' : r.bonusStatus === 'Approved' ? 'badge-purple' : r.bonusStatus === 'Pending' ? 'badge-warning' : 'badge-neutral'">
+            {{ r.bonusStatus }}{{ r.bonusAmount ? ' — ' + (r.bonusAmount | number) : '' }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="myReferrals().length === 0" class="muted text-center">You haven't referred anyone yet.</p>
+</div>
+
+<ng-container *ngIf="isAdmin">
+  <div class="section-title">All Referrals (Bonus Management)</div>
+  <div class="card" *ngFor="let r of allReferrals()" style="margin-bottom: 12px;">
+    <div class="flex-between">
+      <div>
+        <strong>{{ r.referrerName }}</strong> referred
+        <span *ngIf="r.candidateId">{{ r.firstName }} {{ r.lastName }}</span>
+        <span *ngIf="!r.candidateId" class="muted">(pending application)</span>
+        for <strong>{{ r.jobTitle }}</strong>
+      </div>
+      <span class="badge badge-info">{{ r.status }}</span>
+    </div>
+    <div class="flex-gap mt-2">
+      <input type="number" [(ngModel)]="getDraft(r).amount" [name]="'amount' + r.id" placeholder="Bonus amount" style="max-width: 160px;" />
+      <select [(ngModel)]="getDraft(r).status" [name]="'status' + r.id">
+        <option *ngFor="let s of bonusStatuses" [value]="s">{{ s }}</option>
+      </select>
+      <button class="btn-icon" (click)="saveBonus(r)">Save</button>
+    </div>
+  </div>
+</ng-container>

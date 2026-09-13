@@ -1,0 +1,36 @@
+<div class="page-header">
+  <div>
+    <h1>Recruitment Pipeline</h1>
+    <p>Drag candidates between stages. Every move is recorded with a timestamp.</p>
+  </div>
+  <div class="form-group" style="margin-bottom:0; min-width: 260px;">
+    <select [(ngModel)]="selectedJobId" (ngModelChange)="onJobChange()">
+      <option *ngFor="let j of jobs()" [value]="j.id">{{ j.title }}</option>
+    </select>
+  </div>
+</div>
+
+<p *ngIf="loading()" class="muted text-center">Loading…</p>
+
+<div class="kanban-board" *ngIf="!loading()">
+  <div class="kanban-column" *ngFor="let col of columns()">
+    <div class="kanban-column-header">
+      <span>{{ col.stage }}</span>
+      <span class="kanban-column-count">{{ col.candidates.length }}</span>
+    </div>
+    <div
+      class="kanban-cards"
+      cdkDropList
+      [id]="'col-' + col.stage"
+      [cdkDropListData]="col.candidates"
+      [cdkDropListConnectedTo]="connectedColumnIds"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <div class="kanban-card" *ngFor="let c of col.candidates" cdkDrag (click)="openDetail(c)">
+        <div class="card-title">{{ c.firstName }} {{ c.lastName }}</div>
+        <div class="card-meta">{{ c.positionApplied || '—' }}</div>
+        <div class="card-meta" *ngIf="c.totalExperience != null">{{ c.totalExperience }} yrs exp</div>
+      </div>
+    </div>
+  </div>
+</div>

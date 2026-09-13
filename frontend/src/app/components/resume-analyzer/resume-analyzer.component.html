@@ -1,0 +1,185 @@
+<nav class="navbar">
+  <span class="brand">Recruitment Portal</span>
+  <div class="user-info">
+    <span class="muted">Hi, {{ auth.user()?.fullName }}</span>
+    <button class="btn btn-secondary" (click)="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="flex-between mb-4">
+    <h1>Resume Analyzer</h1>
+    <a routerLink="/jobs" class="btn btn-secondary">← Back to Jobs</a>
+  </div>
+
+  <div *ngIf="errorMessage()" class="alert alert-error">{{ errorMessage() }}</div>
+
+  <div class="content-wrapper">
+    <!-- Left Side - Resume Input -->
+    <div class="resume-input-section">
+      <div class="card">
+        <h2>Paste Your Resume</h2>
+        <p class="subtitle">Copy and paste your resume content below for AI-powered analysis and suggestions</p>
+
+        <textarea
+          [(ngModel)]="resumeText"
+          placeholder="Paste your resume content here..."
+          class="resume-textarea">
+        </textarea>
+
+        <div class="input-actions">
+          <button class="btn btn-primary" (click)="analyzeResume()" [disabled]="loading()">
+            {{ loading() ? 'Analyzing...' : '🔍 Analyze Resume' }}
+          </button>
+          <button class="btn btn-secondary" (click)="reset()" [disabled]="loading()">
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - Analysis Results -->
+    <div class="results-section" *ngIf="analyzed()">
+      <!-- Score Card -->
+      <div class="score-card" [class]="'score-' + getScoreColor(analysis()?.overallScore || 0)">
+        <div class="score-circle">
+          <div class="score-number">{{ analysis()?.overallScore }}</div>
+          <div class="score-label">Score</div>
+        </div>
+        <div class="score-details">
+          <h3>{{ getScoreText(analysis()?.overallScore || 0) }}</h3>
+          <p>Resume Completeness: {{ analysis()?.completionPercentage }}%</p>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="analysis()?.completionPercentage"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button
+          class="tab-btn"
+          [class.active]="activeTab() === 'overview'"
+          (click)="activeTab.set('overview')">
+          📊 Overview
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab() === 'suggestions'"
+          (click)="activeTab.set('suggestions')">
+          💡 Suggestions
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab() === 'skills'"
+          (click)="activeTab.set('skills')">
+          🛠️ Skills
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab() === 'jobs'"
+          (click)="activeTab.set('jobs')">
+          💼 Job Matches
+        </button>
+      </div>
+
+      <!-- Overview Tab -->
+      <div class="tab-content card" *ngIf="activeTab() === 'overview'">
+        <h3>Strengths & Weaknesses</h3>
+
+        <div class="overview-grid">
+          <div class="overview-card strengths">
+            <h4>✅ Strengths</h4>
+            <ul>
+              <li *ngFor="let strength of analysis()?.strengths">{{ strength }}</li>
+            </ul>
+          </div>
+
+          <div class="overview-card weaknesses">
+            <h4>⚠️ Areas to Improve</h4>
+            <ul>
+              <li *ngFor="let weakness of analysis()?.weaknesses">{{ weakness }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggestions Tab -->
+      <div class="tab-content card" *ngIf="activeTab() === 'suggestions'">
+        <div class="suggestions-header">
+          <h3>Improvement Suggestions</h3>
+          <button class="btn btn-sm btn-secondary" (click)="downloadSuggestions()">
+            ⬇️ Download Report
+          </button>
+        </div>
+
+        <div class="suggestions-list">
+          <div class="suggestion-item" *ngFor="let suggestion of analysis()?.suggestions"
+               [class]="getPriorityColor(suggestion.priority)">
+            <div class="suggestion-header">
+              <span class="priority-badge">{{ suggestion.priority }}</span>
+              <span class="category-badge">{{ suggestion.category }}</span>
+              <h4>{{ suggestion.title }}</h4>
+            </div>
+            <p>{{ suggestion.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills Tab -->
+      <div class="tab-content card" *ngIf="activeTab() === 'skills'">
+        <h3>Extracted Skills</h3>
+        <div class="skills-grid">
+          <div class="skill-card" *ngFor="let skill of analysis()?.extractedSkills">
+            <div class="skill-name">{{ skill.name }}</div>
+            <div class="skill-level" [class]="getSkillLevelColor(skill.level)">
+              {{ skill.level }}
+            </div>
+            <div class="skill-experience">{{ skill.yearsOfExperience }}+ years</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Job Matches Tab -->
+      <div class="tab-content card" *ngIf="activeTab() === 'jobs'">
+        <h3>Recommended Jobs for You</h3>
+        <p class="subtitle">Based on your resume analysis, these roles are a good match</p>
+
+        <div class="jobs-matches-list">
+          <div class="job-match-card" *ngFor="let job of analysis()?.recommendedJobs">
+            <div class="job-match-header">
+              <h4>{{ job.jobTitle }}</h4>
+              <span class="match-score">{{ job.matchScore }}% Match</span>
+            </div>
+
+            <p class="job-reason">{{ job.reason }}</p>
+
+            <div class="job-match-details">
+              <div class="matched-skills">
+                <strong>Matched Skills:</strong>
+                <div class="skill-tags">
+                  <span class="skill-tag matched" *ngFor="let skill of job.matchedSkills">
+                    ✓ {{ skill }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="missing-skills">
+                <strong>Skills to Develop:</strong>
+                <div class="skill-tags">
+                  <span class="skill-tag missing" *ngFor="let skill of job.missingSkills">
+                    ✕ {{ skill }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-sm" routerLink="/jobs">
+              View Similar Jobs
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

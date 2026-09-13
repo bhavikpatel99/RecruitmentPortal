@@ -1,0 +1,186 @@
+<div class="page-header">
+  <div>
+    <h1>Job Postings</h1>
+    <p>Publish and manage job postings on the career site.</p>
+  </div>
+  <button class="btn" (click)="openCreate()">+ New Job</button>
+</div>
+
+<div class="card">
+  <p *ngIf="loading()" class="muted text-center">Loading…</p>
+
+  <div *ngIf="!loading() && jobs().length === 0" class="empty-state">
+    <div class="empty-icon">💼</div>
+    <p>No job postings yet.</p>
+  </div>
+
+  <table class="table" *ngIf="!loading() && jobs().length > 0">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Department</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Posted</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let j of jobs()">
+        <td>{{ j.title }}</td>
+        <td>{{ j.department }}</td>
+        <td>{{ j.location }}</td>
+        <td>
+          <span class="badge" [ngClass]="j.status === 'Open' ? 'badge-success' : 'badge-neutral'">{{ j.status }}</span>
+        </td>
+        <td class="muted">{{ j.postedDate | date: 'mediumDate' }}</td>
+        <td>
+          <div class="flex-gap">
+            <button class="btn-icon" (click)="viewPipeline(j)">Pipeline</button>
+            <button class="btn-icon" (click)="openPublish(j)">Publish</button>
+            <button class="btn-icon" (click)="openEdit(j)">Edit</button>
+            <button *ngIf="j.status === 'Open'" class="btn-icon" (click)="closeJob(j)">Close</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-backdrop" *ngIf="showForm()" (click)="closeForm()">
+  <div class="modal" style="max-width: 640px;" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editingId ? 'Edit Job Posting' : 'New Job Posting' }}</h2>
+      <button class="modal-close" (click)="closeForm()">&times;</button>
+    </div>
+    <form #jobForm="ngForm" (ngSubmit)="submit()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Title <span class="required-mark">*</span></label>
+          <input name="title" #titleModel="ngModel" [(ngModel)]="form.title" required
+                 [class.invalid]="titleModel.touched && titleModel.invalid" />
+          <div class="error-text" *ngIf="titleModel.touched && titleModel.invalid">Title is required.</div>
+        </div>
+        <div class="form-group">
+          <label>Department <span class="required-mark">*</span></label>
+          <input name="department" #deptModel="ngModel" [(ngModel)]="form.department" required
+                 [class.invalid]="deptModel.touched && deptModel.invalid" />
+          <div class="error-text" *ngIf="deptModel.touched && deptModel.invalid">Department is required.</div>
+        </div>
+        <div class="form-group">
+          <label>Location <span class="required-mark">*</span></label>
+          <input name="location" #locModel="ngModel" [(ngModel)]="form.location" required
+                 [class.invalid]="locModel.touched && locModel.invalid" />
+          <div class="error-text" *ngIf="locModel.touched && locModel.invalid">Location is required.</div>
+        </div>
+        <div class="form-group">
+          <label>Employment Type</label>
+          <input name="employmentType" [(ngModel)]="form.employmentType" />
+        </div>
+        <div class="form-group">
+          <label>Salary Min</label>
+          <input type="number" name="salaryMin" [(ngModel)]="form.salaryMin" />
+        </div>
+        <div class="form-group">
+          <label>Salary Max</label>
+          <input type="number" name="salaryMax" [(ngModel)]="form.salaryMax" />
+        </div>
+        <div class="form-group">
+          <label>Experience Min (yrs)</label>
+          <input type="number" name="experienceYearsMin" [(ngModel)]="form.experienceYearsMin" />
+        </div>
+        <div class="form-group">
+          <label>Experience Max (yrs)</label>
+          <input type="number" name="experienceYearsMax" [(ngModel)]="form.experienceYearsMax" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Skills (general)</label>
+        <input name="skills" [(ngModel)]="form.skills" />
+      </div>
+      <div class="form-group">
+        <label>Description <span class="required-mark">*</span></label>
+        <textarea name="description" #descModel="ngModel" [(ngModel)]="form.description" required
+                  [class.invalid]="descModel.touched && descModel.invalid"></textarea>
+        <div class="error-text" *ngIf="descModel.touched && descModel.invalid">Description is required.</div>
+      </div>
+      <div class="form-group">
+        <label>Requirements</label>
+        <textarea name="requirements" [(ngModel)]="form.requirements"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Responsibilities</label>
+        <textarea name="responsibilities" [(ngModel)]="form.responsibilities"></textarea>
+      </div>
+
+      <div class="section-title">Job Description Builder</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Work Mode</label>
+          <select name="workMode" [(ngModel)]="form.workMode">
+            <option value="Onsite">Onsite</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="Remote">Remote</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Education Requirement</label>
+          <input name="educationRequirement" [(ngModel)]="form.educationRequirement" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Must-Have Skills</label>
+        <input name="mustHaveSkills" [(ngModel)]="form.mustHaveSkills" placeholder="Comma-separated" />
+      </div>
+      <div class="form-group">
+        <label>Nice-to-Have Skills</label>
+        <input name="niceToHaveSkills" [(ngModel)]="form.niceToHaveSkills" placeholder="Comma-separated" />
+      </div>
+      <div class="form-group">
+        <label>Benefits</label>
+        <textarea name="benefitsText" [(ngModel)]="form.benefitsText"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Legal / Equal Opportunity Text</label>
+        <textarea name="legalText" [(ngModel)]="form.legalText"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+        <button type="submit" class="btn" [disabled]="jobForm.invalid">{{ editingId ? 'Save Changes' : 'Publish Job' }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Publish to channels modal -->
+<div class="modal-backdrop" *ngIf="showPublishFor() as job" (click)="closePublish()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Publish: {{ job.title }}</h2>
+      <button class="modal-close" (click)="closePublish()">&times;</button>
+    </div>
+
+    <div class="flex-gap mb-4" style="flex-wrap: wrap;">
+      <select [(ngModel)]="newChannel" name="newChannel">
+        <option *ngFor="let c of channelOptions" [value]="c">{{ c }}</option>
+      </select>
+      <input [(ngModel)]="newChannelUrl" name="newChannelUrl" placeholder="External URL (optional)" style="min-width: 200px;" />
+      <input type="date" [(ngModel)]="newChannelExpiry" name="newChannelExpiry" />
+      <button class="btn-icon" (click)="addChannel()">Mark Published</button>
+    </div>
+
+    <table class="table" *ngIf="channels().length > 0">
+      <thead><tr><th>Channel</th><th>Status</th><th>Expiry</th><th></th></tr></thead>
+      <tbody>
+        <tr *ngFor="let c of channels()">
+          <td>{{ c.channel }}</td>
+          <td><span class="badge" [ngClass]="c.status === 'Active' ? 'badge-success' : 'badge-neutral'">{{ c.status }}</span></td>
+          <td class="muted">{{ c.expiryDate ? (c.expiryDate | date: 'mediumDate') : '—' }}</td>
+          <td><button class="btn-icon" *ngIf="c.status === 'Active'" (click)="removeChannel(c)">Remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="channels().length === 0" class="muted">Not published to any channel yet.</p>
+  </div>
+</div>

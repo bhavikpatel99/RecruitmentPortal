@@ -1,0 +1,90 @@
+<div class="page-header">
+  <div>
+    <h1>Recruitment Analytics</h1>
+    <p>Time-to-fill, time-to-hire, source effectiveness, funnel conversion, and team productivity.</p>
+  </div>
+</div>
+
+<p *ngIf="loading()" class="muted text-center">Loading…</p>
+
+<ng-container *ngIf="!loading()">
+  <div class="stat-grid">
+    <div class="stat-card accent-primary">
+      <div class="stat-label">Avg. Time to Fill</div>
+      <div class="stat-value">{{ avgTimeToFill }} days</div>
+      <div class="stat-sub">{{ timeToFill().length }} jobs filled</div>
+    </div>
+    <div class="stat-card accent-success">
+      <div class="stat-label">Avg. Time to Hire</div>
+      <div class="stat-value">{{ avgTimeToHire }} days</div>
+      <div class="stat-sub">{{ timeToHire().length }} hires</div>
+    </div>
+    <div class="stat-card accent-warning">
+      <div class="stat-label">Offer Acceptance Rate</div>
+      <div class="stat-value">{{ offerAcceptanceRate }}%</div>
+      <div class="stat-sub">of responded offers</div>
+    </div>
+  </div>
+
+  <div class="split-layout">
+    <div class="card">
+      <div class="section-title" style="margin-top:0;">Hiring Funnel (ever reached)</div>
+      <div *ngFor="let s of stageFunnel()" style="margin-bottom: 10px;">
+        <div class="flex-between" style="font-size: 13px; margin-bottom: 4px;">
+          <span>{{ s.stage }}</span>
+          <span class="muted">{{ s.candidateCount }}</span>
+        </div>
+        <div style="background: var(--border); border-radius: 6px; height: 10px; overflow: hidden;">
+          <div [style.width]="funnelBarWidth(s.candidateCount)" style="background: var(--primary); height: 100%;"></div>
+        </div>
+      </div>
+
+      <div class="section-title">Source Effectiveness</div>
+      <table class="table">
+        <thead><tr><th>Source</th><th>Applied</th><th>Shortlisted</th><th>Hired</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let s of sourceEffectiveness()">
+            <td>{{ s.source }}</td>
+            <td>{{ s.totalApplications }}</td>
+            <td>{{ s.shortlisted }}</td>
+            <td><span class="badge badge-success">{{ s.hired }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-top:0;">Recruiter Productivity</div>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Req.</th><th>Moves</th><th>Interviews</th><th>Offers</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let r of recruiterProductivity()">
+            <td>{{ r.fullName }}</td>
+            <td>{{ r.requisitionsCreated }}</td>
+            <td>{{ r.stageMovesMade }}</td>
+            <td>{{ r.interviewsScheduled }}</td>
+            <td>{{ r.offersCreated }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">Offer Status Breakdown</div>
+      <div class="flex-gap" style="flex-wrap: wrap;">
+        <span class="badge badge-neutral" *ngFor="let o of offerStats()">{{ o.status }}: {{ o.count }}</span>
+        <span *ngIf="offerStats().length === 0" class="muted">No offers yet.</span>
+      </div>
+
+      <div class="section-title">Interview Turnaround</div>
+      <p *ngIf="interviewTurnaround().length === 0" class="muted">No completed interviews with feedback yet.</p>
+      <table class="table" *ngIf="interviewTurnaround().length > 0">
+        <thead><tr><th>Scheduled</th><th>Hours to Feedback</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let t of interviewTurnaround()">
+            <td>{{ t.scheduledAt | date: 'short' }}</td>
+            <td>{{ t.hoursToFeedback }}h</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ng-container>

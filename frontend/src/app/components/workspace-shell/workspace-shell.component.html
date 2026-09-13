@@ -1,0 +1,47 @@
+<div class="shell" [class.shell-collapsed]="!sidebarOpen">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <button class="icon-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar">☰</button>
+      <span class="brand-text">Recruitment Portal</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a
+        *ngFor="let item of visibleNavItems"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        class="nav-item"
+      >
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <a
+      *ngIf="auth.user()?.role === 'Admin'"
+      href="/assets/handbook.html"
+      target="_blank"
+      rel="noopener"
+      class="nav-item"
+    >
+      <span class="nav-icon">📖</span>
+      <span class="nav-label">User Guide</span>
+    </a>
+  </aside>
+
+  <div class="shell-main">
+    <header class="shell-topbar">
+      <div class="topbar-user">
+        <span class="user-avatar">{{ (auth.user()?.fullName || '?').charAt(0) }}</span>
+        <div class="user-meta">
+          <span class="user-name">{{ auth.user()?.fullName }}</span>
+          <span class="user-role badge">{{ auth.user()?.role }}</span>
+        </div>
+      </div>
+      <button class="btn btn-secondary" (click)="logout()">Logout</button>
+    </header>
+
+    <main class="shell-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

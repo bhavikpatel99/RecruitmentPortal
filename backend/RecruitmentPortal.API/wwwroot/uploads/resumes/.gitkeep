@@ -1,0 +1,6 @@
+This file exists solely so the wwwroot/uploads/resumes directory is present
+when the API host starts. ASP.NET Core's static-file provider is bound to
+whatever wwwroot looks like at startup - if the folder doesn't exist yet,
+files created into it later (e.g. by the resume-upload endpoint) are saved
+correctly but 404 when fetched, because the file provider never notices the
+directory. Keeping this placeholder guarantees the folder always exists.

@@ -1,0 +1,206 @@
+<div class="page-header">
+  <div>
+    <h1>Organization & Hiring Setup</h1>
+    <p>Master data used across requisitions, jobs, and interviews.</p>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn" [class.active]="activeTab() === 'departments'" (click)="setTab('departments')">Departments</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'locations'" (click)="setTab('locations')">Locations</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'jobFamilies'" (click)="setTab('jobFamilies')">Job Families</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'skills'" (click)="setTab('skills')">Skills</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'competencies'" (click)="setTab('competencies')">Competencies</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'salaryBands'" (click)="setTab('salaryBands')">Salary Bands</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'approvals'" (click)="setTab('approvals')">Approval Matrices</button>
+  <button class="tab-btn" [class.active]="activeTab() === 'panels'" (click)="setTab('panels')">Interview Panels</button>
+</div>
+
+<!-- Departments -->
+<div class="card" *ngIf="activeTab() === 'departments'">
+  <div class="flex-gap mb-4">
+    <input [(ngModel)]="newName" name="newName" placeholder="Department name" required style="max-width: 260px;" />
+    <button class="btn-icon" (click)="addDepartment()" [disabled]="!newName.trim()">Add</button>
+  </div>
+  <div class="flex-gap" style="flex-wrap: wrap;">
+    <span class="badge badge-neutral" *ngFor="let d of departments()" style="padding: 6px 12px;">
+      {{ d.name }} <button class="modal-close" style="font-size:12px; margin-left:6px;" (click)="removeDepartment(d.id!)">&times;</button>
+    </span>
+  </div>
+</div>
+
+<!-- Locations -->
+<div class="card" *ngIf="activeTab() === 'locations'">
+  <div class="flex-gap mb-4" style="flex-wrap: wrap;">
+    <input [(ngModel)]="newName" name="newName" placeholder="Location name" required style="max-width: 200px;" />
+    <input [(ngModel)]="newCity" name="newCity" placeholder="City" style="max-width: 160px;" />
+    <input [(ngModel)]="newCountry" name="newCountry" placeholder="Country" style="max-width: 160px;" />
+    <button class="btn-icon" (click)="addLocation()" [disabled]="!newName.trim()">Add</button>
+  </div>
+  <table class="table">
+    <tbody>
+      <tr *ngFor="let l of locations()">
+        <td>{{ l.name }}</td>
+        <td class="muted">{{ l.city }}{{ l.city && l.country ? ', ' : '' }}{{ l.country }}</td>
+        <td><button class="btn-icon" (click)="removeLocation(l.id!)">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Job Families -->
+<div class="card" *ngIf="activeTab() === 'jobFamilies'">
+  <div class="flex-gap mb-4">
+    <input [(ngModel)]="newName" name="newName" placeholder="Job family name" required style="max-width: 220px;" />
+    <input [(ngModel)]="newDescription" name="newDescription" placeholder="Description" style="max-width: 300px;" />
+    <button class="btn-icon" (click)="addJobFamily()" [disabled]="!newName.trim()">Add</button>
+  </div>
+  <table class="table">
+    <tbody>
+      <tr *ngFor="let f of jobFamilies()">
+        <td>{{ f.name }}</td>
+        <td class="muted">{{ f.description }}</td>
+        <td><button class="btn-icon" (click)="removeJobFamily(f.id!)">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Skills -->
+<div class="card" *ngIf="activeTab() === 'skills'">
+  <div class="flex-gap mb-4">
+    <input [(ngModel)]="newName" name="newName" placeholder="Skill name" required style="max-width: 220px;" />
+    <input [(ngModel)]="newDescription" name="newDescription" placeholder="Category (optional)" style="max-width: 220px;" />
+    <button class="btn-icon" (click)="addSkill()" [disabled]="!newName.trim()">Add</button>
+  </div>
+  <div class="flex-gap" style="flex-wrap: wrap;">
+    <span class="badge badge-info" *ngFor="let s of skills()" style="padding: 6px 12px;">
+      {{ s.name }} <button class="modal-close" style="font-size:12px; margin-left:6px;" (click)="removeSkill(s.id!)">&times;</button>
+    </span>
+  </div>
+</div>
+
+<!-- Competencies -->
+<div class="card" *ngIf="activeTab() === 'competencies'">
+  <div class="flex-gap mb-4">
+    <input [(ngModel)]="newName" name="newName" placeholder="Competency name" required style="max-width: 220px;" />
+    <input [(ngModel)]="newDescription" name="newDescription" placeholder="Description" style="max-width: 300px;" />
+    <button class="btn-icon" (click)="addCompetency()" [disabled]="!newName.trim()">Add</button>
+  </div>
+  <table class="table">
+    <tbody>
+      <tr *ngFor="let c of competencies()">
+        <td>{{ c.name }}</td>
+        <td class="muted">{{ c.description }}</td>
+        <td><button class="btn-icon" (click)="removeCompetency(c.id!)">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Salary Bands -->
+<div class="card" *ngIf="activeTab() === 'salaryBands'">
+  <div class="form-grid mb-4">
+    <div class="form-group">
+      <label>Job Family</label>
+      <select [(ngModel)]="bandDraft.jobFamilyId" name="bandJobFamily">
+        <option [ngValue]="null">—</option>
+        <option *ngFor="let f of jobFamilies()" [ngValue]="f.id">{{ f.name }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Level <span class="required-mark">*</span></label>
+      <input [(ngModel)]="bandDraft.level" name="level" placeholder="e.g. Senior" required [class.invalid]="!bandDraft.level" />
+    </div>
+    <div class="form-group">
+      <label>Min Salary</label>
+      <input type="number" [(ngModel)]="bandDraft.minSalary" name="minSalary" />
+    </div>
+    <div class="form-group">
+      <label>Max Salary</label>
+      <input type="number" [(ngModel)]="bandDraft.maxSalary" name="maxSalary" />
+    </div>
+  </div>
+  <button class="btn-icon mb-4" (click)="addSalaryBand()" [disabled]="!bandDraft.level">Add Band</button>
+  <table class="table">
+    <thead><tr><th>Job Family</th><th>Level</th><th>Range</th><th></th></tr></thead>
+    <tbody>
+      <tr *ngFor="let b of salaryBands()">
+        <td>{{ b.jobFamilyName || '—' }}</td>
+        <td>{{ b.level }}</td>
+        <td>{{ b.minSalary | number }} - {{ b.maxSalary | number }} {{ b.currency }}</td>
+        <td><button class="btn-icon" (click)="removeSalaryBand(b.id!)">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Approval Matrices -->
+<div class="card" *ngIf="activeTab() === 'approvals'">
+  <div class="form-grid mb-4">
+    <div class="form-group">
+      <label>Name <span class="required-mark">*</span></label>
+      <input [(ngModel)]="matrixDraft.name" name="matrixName" required [class.invalid]="!matrixDraft.name" />
+    </div>
+    <div class="form-group">
+      <label>Required Approver Role</label>
+      <select [(ngModel)]="matrixDraft.requiredApproverRole" name="approverRole">
+        <option value="Admin">Admin</option>
+        <option value="Recruiter">Recruiter</option>
+        <option value="HiringManager">Hiring Manager</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Min Amount</label>
+      <input type="number" [(ngModel)]="matrixDraft.minAmount" name="minAmount" />
+    </div>
+    <div class="form-group">
+      <label>Max Amount (blank = no limit)</label>
+      <input type="number" [(ngModel)]="matrixDraft.maxAmount" name="maxAmount" />
+    </div>
+  </div>
+  <button class="btn-icon mb-4" (click)="addApprovalMatrix()" [disabled]="!matrixDraft.name">Add Rule</button>
+  <table class="table">
+    <thead><tr><th>Name</th><th>Range</th><th>Approver</th><th></th></tr></thead>
+    <tbody>
+      <tr *ngFor="let m of approvalMatrices()">
+        <td>{{ m.name }}</td>
+        <td>{{ m.minAmount | number }} – {{ m.maxAmount ? (m.maxAmount | number) : 'No limit' }}</td>
+        <td><span class="badge badge-purple">{{ m.requiredApproverRole }}</span></td>
+        <td><button class="btn-icon" (click)="removeApprovalMatrix(m.id!)">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Interview Panels -->
+<div *ngIf="activeTab() === 'panels'">
+  <div class="card mb-4">
+    <div class="flex-gap">
+      <input [(ngModel)]="newName" name="newName" placeholder="Panel name" required style="max-width: 220px;" />
+      <input [(ngModel)]="newDescription" name="newDescription" placeholder="Description" style="max-width: 300px;" />
+      <button class="btn-icon" (click)="addPanel()" [disabled]="!newName.trim()">Create Panel</button>
+    </div>
+  </div>
+
+  <div class="card" *ngFor="let p of panels()" style="margin-bottom: 12px;">
+    <div class="flex-between" style="cursor:pointer;" (click)="togglePanel(p)">
+      <div><strong>{{ p.name }}</strong> <span class="badge badge-neutral" style="margin-left:8px;">{{ p.memberCount }} members</span></div>
+      <button class="btn-icon" (click)="removePanel(p.id!); $event.stopPropagation()">Remove</button>
+    </div>
+    <div *ngIf="expandedPanelId() === p.id" style="margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
+      <div class="flex-gap" style="flex-wrap: wrap;">
+        <span class="badge badge-info" *ngFor="let m of panelMembers()" style="padding: 6px 12px;">
+          {{ m.fullName }} <button class="modal-close" style="font-size:12px; margin-left:6px;" (click)="removePanelMember(p.id!, m.userId)">&times;</button>
+        </span>
+      </div>
+      <div class="flex-gap mt-2">
+        <select [(ngModel)]="selectedUserId" name="selectedUserId">
+          <option [ngValue]="null" disabled>Add member…</option>
+          <option *ngFor="let u of users()" [ngValue]="u.id">{{ u.fullName }}</option>
+        </select>
+        <button class="btn-icon" (click)="addPanelMember(p.id!)">Add</button>
+      </div>
+    </div>
+  </div>
+</div>

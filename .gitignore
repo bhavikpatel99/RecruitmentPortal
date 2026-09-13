@@ -1,0 +1,44 @@
+## ---------------------------------------------------------------------------
+## .NET / Backend (backend/RecruitmentPortal.API)
+## ---------------------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Secrets (never commit real connection strings / API keys)
+appsettings.*.local.json
+secrets.json
+
+## ---------------------------------------------------------------------------
+## Angular / Frontend (frontend/)
+## ---------------------------------------------------------------------------
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/tmp/
+npm-debug.log*
+yarn-error.log*
+
+## ---------------------------------------------------------------------------
+## Editors / OS
+## ---------------------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+## ---------------------------------------------------------------------------
+## Logs / env
+## ---------------------------------------------------------------------------
+*.log
+.env
+.env.*
+!.env.example
